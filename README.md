@@ -1,4 +1,4 @@
-# state-bridge
+# state-keeper
 
 A simple State Container for any application type. This library can be used to manage application state for views and logic with or without history kept.
 
