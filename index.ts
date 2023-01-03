@@ -59,7 +59,7 @@ export class StateDriver {
     if(!this.stateStore[storeName]){
       throw new Error("Store doesn't exist");
     } 
-    const _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length -1 : previousIndex;
+    const _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
     return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].state[_previousIndex]);
   }
 
