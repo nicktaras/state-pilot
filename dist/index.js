@@ -59,7 +59,7 @@ var StateDriver = (function () {
         if (!this.stateStore[storeName]) {
             throw new Error("Store doesn't exist");
         }
-        var _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length - 1 : previousIndex;
+        var _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
         return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].state[_previousIndex]);
     };
     StateDriver.prototype.getStoreState = function (storeName) {
@@ -103,6 +103,7 @@ var StateDriver = (function () {
         if (!subs) {
             return false;
         }
+        ;
         Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
     };
     return StateDriver;
