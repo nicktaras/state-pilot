@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./index.js"></script>
+</head>
+<body>
+
+  <script type="text/javascript"> 
+
+    const sk = new StateKeeper();
+    
+    function createStore() {
+      sk.createStore("views");
+    }
+
+    function callback(data) {
+      console.log('data', data);
+    }
+    
+  </script>
+
+  <button onclick="sk.createStore('views')">Create Store</button>
+  <button onclick="sk.createStoreState('views', { type: 'settings' })">Create Store State 1</button>
+  <button onclick="sk.createStoreState('views', { type: 'home' })">Create Store State 2</button>
+  <button onclick="sk.createStoreState('views', { type: 'about' })">Create Store State 3</button>
+
+  <button onclick="sk.subscribe('views', callback)">Subscribe to store</button>
+  
+</body>
+</html>

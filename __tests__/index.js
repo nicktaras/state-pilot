@@ -28,7 +28,25 @@ test('get current store state history', () => {
   stateKeeper.createStoreState("views", { path: "/home", pageName: "home" });
   stateKeeper.createStoreState("views", { path: "/about", pageName: "about" });
   stateKeeper.createStoreState("views", { path: "/contact", pageName: "contact" });
-  expect(stateKeeper.getStoreStateHistory("views", 0, 100)).toEqual([{"pageName": "home", "path": "/home"}, {"pageName": "about", "path": "/about"}, {"pageName": "contact", "path": "/contact"}]);
+  expect(stateKeeper.getStoreStateHistory("views", 0, 100)).toEqual(
+    [{"pageName": "contact", "path": "/contact"}, {"pageName": "about", "path": "/about"}, {"pageName": "home", "path": "/home"}]
+  );
+});
+
+test('create a few stores and check current state history', () => {
+  const stateKeeper = new StateKeeper();
+  stateKeeper.createStore("views");
+  stateKeeper.createStoreState("views", { path: "/home", pageName: "home" });
+  stateKeeper.createStoreState("views", { path: "/about", pageName: "about" });
+  stateKeeper.createStoreState("views", { path: "/contact", pageName: "contact" });
+  stateKeeper.createStore("settings");
+  stateKeeper.createStoreState("settings", { darkMode: true, privacyMode: true });
+  expect(stateKeeper.getStoreStateHistory("views", 0, 100)).toEqual(
+    [{"pageName": "contact", "path": "/contact"}, {"pageName": "about", "path": "/about"}, {"pageName": "home", "path": "/home"}]
+  );
+  expect(stateKeeper.getStoreStateHistory("settings", 0, 100)).toEqual(
+    [{"darkMode": true, "privacyMode": true}]
+  );
 });
 
 test('export store data', () => {
@@ -37,7 +55,7 @@ test('export store data', () => {
   stateKeeper.createStoreState("views", { path: "/home", pageName: "home" });
   stateKeeper.createStoreState("views", { path: "/about", pageName: "about" });
   stateKeeper.createStoreState("views", { path: "/contact", pageName: "contact" });
-  expect(stateKeeper.exportStore()).toEqual({"views": [{"pageName": "home", "path": "/home"}, {"pageName": "about", "path": "/about"}, {"pageName": "contact", "path": "/contact"}]});
+  expect(stateKeeper.exportStore()).toEqual({"views": [{"pageName": "contact", "path": "/contact"}, {"pageName": "about", "path": "/about"}, {"pageName": "home", "path": "/home"}]})
 });
 
 test('import store data', () => {

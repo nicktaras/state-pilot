@@ -1,6 +1,6 @@
 # state-keeper
 
-A simple State Container for any application type. This library can be used to manage application state for views and logic with or without history kept.
+A simple State Container for any application type. This library can be used to manage application state for views and logic with history.
 
 # dev
 
@@ -49,8 +49,16 @@ This library requires stores to be made per type of state collection. For exampl
   // @params string stateStoreName
   // @params number startIndex
   // @params number lastIndex
-  // @returns currrent store state history
+  // @returns store state history from range
   myNewStore.getStoreStateHistory(stateStoreName:string, startIndex:number, lastIndex:number);
+
+````
+
+````javascript 
+  
+  // @params string stateStoreName
+  // @returns all store state history
+  myNewStore.getAllStoreStateHistory(stateStoreName:string);
 
 ````
 
@@ -66,7 +74,16 @@ This library requires stores to be made per type of state collection. For exampl
   
   // @returns object store
   myNewStore.exportStore();
-
+  
 ````
+
+// const unsub1 = PubSub.subscribe('spacex', data => console.log('Falcon was launched', data));
+// const unsub2 = PubSub.subscribe('spacex', data => console.log('Falcon Heavy was launched', data));
+// PubSub.publish('spacex', 'some data slash params')
+// // Unsubscribe single subscription
+// unsub1(); // Unsubscribes Falcon
+// unsub2(); // Unsubscribes Falcon Heavy
+// // Unsubscribe ALL subscriptions for a topic
+// PubSub.unsubscribe('spacex')
 
 
