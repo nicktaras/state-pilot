@@ -1,4 +1,7 @@
 {
+  "name": "state-driver",
+  "main": "dist/index.js",
+  "version": "1.0.0",
   "devDependencies": {
     "@babel/core": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
@@ -9,6 +12,9 @@
     "build": "npx tsc",
     "test": "jest"
   },
+  "files": [
+    "dist/"
+  ],
   "dependencies": {
     "jest": "^29.3.1",
     "ts-jest": "^29.0.3"

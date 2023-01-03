@@ -1,4 +1,4 @@
-# state-keeper
+# state-driver
 
 A simple State Container for any application type. This library can be used to manage application state for views and logic with history.
 
@@ -14,7 +14,7 @@ Create a new store inside your application.
 ````javascript
 
   // @param Object PreviousState a previous store state exported from the store.
-  const myNewStore = new StateBridge(previousState);
+  const stateDriver = new StateDriver(previousState);
 
 ````
 
@@ -23,26 +23,33 @@ This library requires stores to be made per type of state collection. For exampl
 ````javascript
   
   // @param String stateStoreName declare a name for your store
+  // @param Boolean useHistory allows store history to be read
   // @returns new store
-  myNewStore.createStore(stateStoreName);
+  stateDriver.createStore(stateStoreName, useHistory);
 
 ````
+
+Add a new state to a store.
 
 ````javascript 
   
   // @params string stateStoreName store
   // @params object state data 
   // @returns new store state
-  myNewStore.createStoreState(stateStoreName:string, state:any);
+  stateDriver.createStoreState(stateStoreName:string, state:any);
 
 ````
+
+Get a stores most recent state.
 
 ````javascript 
   
   // @returns currrent store state
-  myNewStore.getStoreState();
+  stateDriver.getStoreState();
 
 ````
+
+get a stores state history from a select number of events.
 
 ````javascript 
   
@@ -50,40 +57,69 @@ This library requires stores to be made per type of state collection. For exampl
   // @params number startIndex
   // @params number lastIndex
   // @returns store state history from range
-  myNewStore.getStoreStateHistory(stateStoreName:string, startIndex:number, lastIndex:number);
+  stateDriver.getStoreStateHistory(stateStoreName:string, startIndex:number, lastIndex:number);
 
 ````
+
+get an entre stores state history.
 
 ````javascript 
   
   // @params string stateStoreName
   // @returns all store state history
-  myNewStore.getAllStoreStateHistory(stateStoreName:string);
+  stateDriver.getAllStoreStateHistory(stateStoreName:string);
 
 ````
+
+import all stores (from a previously exported store).
 
 ````javascript 
   
   // @params object store provide a valid store object from previous session
   // @returns object store
-  myNewStore.importStore(store);
+  stateDriver.importStore(store);
 
 ````
+
+export all stores.
 
 ````javascript 
   
   // @returns object store
-  myNewStore.exportStore();
+  stateDriver.exportStore();
   
 ````
 
-// const unsub1 = PubSub.subscribe('spacex', data => console.log('Falcon was launched', data));
-// const unsub2 = PubSub.subscribe('spacex', data => console.log('Falcon Heavy was launched', data));
-// PubSub.publish('spacex', 'some data slash params')
-// // Unsubscribe single subscription
-// unsub1(); // Unsubscribes Falcon
-// unsub2(); // Unsubscribes Falcon Heavy
-// // Unsubscribe ALL subscriptions for a topic
-// PubSub.unsubscribe('spacex')
+Subscribe to a store.
+
+````javascript 
+ 
+  const unSubUserSettings = stateDriver.subscribe('userSettings', data => console.log('darkMode has been set', data));
+
+  // triggered event will be caught by the subscribers call back
+  stateDriver.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
+  
+  
+````
+
+Unsubscribe from a store subscription instance.
+
+````javascript
+  
+  // @description unsubscribe from single subscription
+  unSubUserSettings();
+  
+````
+
+Unsubscribe from an entire store.
+
+````javascript 
+  
+  // @description unsubscribe from all store subscriptions
+  stateDriver.unsubscribe('userSettings');
+  
+````
+
+
 
 

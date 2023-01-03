@@ -1,22 +1,21 @@
-// @ts-nocheck
 
-export class StateKeeper {
+export class StateDriver {
+  subIds: number;
+  subscriptions: {};
+  stateStore: {};
 
   // all states are held within a store
-
-  stateStore = {
-  /* 
-    view: [
-      { page: "dashboard", params: {} }
-    ]
-  */
-  };
-
-  eventRegister = {};
 
   constructor() {
     this.subIds = 0;
     this.subscriptions = {}
+    this.stateStore = {
+      /* 
+        view: [
+          { page: "dashboard", params: {} }
+        ]
+      */
+    };
   }
 
   // import a previously exported store
@@ -31,13 +30,12 @@ export class StateKeeper {
   }
 
   // create a new store e.g. 'userSettings'
-  public createStore(storeName:string) {
+  public createStore(storeName:string, useHistory:boolean) {
     if(this.stateStore[storeName]) {
       throw new Error("Store name already exists");
-    } else {
-       this.stateStore[storeName] = [];
-    }
-    return this.eventHandler('createStore', storeName, this.stateStore[storeName]);
+    } 
+    this.stateStore[storeName] = { useHistory: useHistory === true ? true : false, state: [] };
+    return this.eventHandler('createStore', storeName, this.stateStore[storeName].state);
   }
   
   // create a new store state e.g. 'userSettings', [{ darkMode: true, theme: 'fresh', lang: 'en-us' }]
@@ -45,28 +43,42 @@ export class StateKeeper {
   public createStoreState(storeName:string, state:any) {
     if(!this.stateStore[storeName]){ 
       throw new Error("Store doesn't exist");
-    } else { 
-      this.stateStore[storeName].unshift(state);
     }
-    return this.eventHandler('createStoreState', storeName, this.stateStore[storeName][0]);
+    if(this.stateStore[storeName].useHistory === false) {
+      this.stateStore[storeName].state = [state];
+    } else {
+      this.stateStore[storeName].state.unshift(state);
+    }
+    return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[0]);
+  }
+
+  // get a previous state from a store. This could be used to allow a user to navigate through 
+  // events they have triggered e.g. purchase details, moves made in a game (to create an action replay etc)
+  // if a previous index is out of range, the length will be given.
+  public getPreviousState(storeName:string, previousIndex:any) {
+    if(!this.stateStore[storeName]){
+      throw new Error("Store doesn't exist");
+    } 
+    const _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length -1 : previousIndex;
+    return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].state[_previousIndex]);
   }
 
   // get most recent stores state
   public getStoreState(storeName:string) {
     if(!this.stateStore[storeName]) throw new Error("Store doesn't exist");
-    return this.eventHandler('getStoreState', storeName, this.stateStore[storeName][0]);
+    return this.eventHandler('getStoreState', storeName, this.stateStore[storeName].state[0]);
   }
 
   // get all of a store states
   public getAllStoreStateHistory(storeName) {
-    return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].slice(0, this.stateStore[storeName].length));
+    return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length -1));
   }
   
   // get a selection of states from a store
   public getStoreStateHistory(storeName:string, startIndex:number, lastIndex:number) {
     if(!this.stateStore[storeName]) { throw new Error("Store doesn't exist"); }
-    const _lastIndex = lastIndex >= this.stateStore[storeName].length ? this.stateStore[storeName].length : lastIndex;
-    return this.eventHandler('getStoreStateHistory', storeName, this.stateStore[storeName].slice(startIndex, _lastIndex));
+    const _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
+    return this.eventHandler('getStoreStateHistory', storeName, this.stateStore[storeName].state.slice(startIndex, _lastIndex));
   }
 
   // subscribe to a store
@@ -94,6 +106,7 @@ export class StateKeeper {
   private publish (topic, ...args) {
     const subs = this.subscriptions[topic];
     if(!subs) { return false }
+    // @ts-ignore
     Object.values(subs).forEach(sub => sub(...args))
   }
   
