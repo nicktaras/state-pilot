@@ -105,9 +105,8 @@ export class StateDriver {
   // publish a new topic or update to store
   private publish (topic, ...args) {
     const subs = this.subscriptions[topic];
-    if(!subs) { return false }
-    // @ts-ignore
-    Object.values(subs).forEach(sub => sub(...args))
+    if(!subs) { return false };
+    Object.values(subs).forEach((sub:any) => sub(...args));
   }
   
 }
