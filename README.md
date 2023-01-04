@@ -96,7 +96,7 @@ export all stores.
   
 ````
 
-Subscribe to a store.
+subscribe to a store.
 
 ````javascript 
  
