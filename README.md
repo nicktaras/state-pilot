@@ -10,6 +10,7 @@ See this github repo's /examples of how this library can be used.
 # dev
 
 npm run build - build the ts file
+
 npm run test  - test the logic
 
 # usage
