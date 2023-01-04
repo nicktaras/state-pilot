@@ -1,6 +1,6 @@
 import React, {useState, useContext} from "react";
 import './App.css';
-import { StateDriver } from './dist';
+import { StateDriver } from 'state-driver';
 
 // state driver initial setup
 const stateDriver = new StateDriver();
@@ -46,7 +46,7 @@ function Pub(props) {
   return (
     <p>
       <button onClick={e => { toggleSettings(e) }}>Toggle State Change Event</button>&nbsp;&nbsp;&nbsp;
-      <button onClick={e => { previousSettings(e) }}>Go to Initial State Change Event</button>
+      <button onClick={e => { previousSettings(e) }}>Undo/Redo Change Event</button>
     </p>
   );
 }
