@@ -1,9 +1,11 @@
 # state-driver
 
-This library can be used to manage application state for views and logic with history. It is minimal, small in size and made to enable the core requirements of managing state and subscribing to changes through callback functions.
+This library is minimal, small (5kb) and can be used to manage and subscribe to changes in your applications state.
 
-Beyond the constructs of this library, stores can be initialised and managed however you require using any 
-style of data structure(s) per store(s) with the option to keep history and read from it.
+Beyond the few methods this library provides, state stores can be initialised and managed using any 
+style of data structure(s) with the option to keep history per store.
+
+See this github repo's /examples of how this library can be used.
 
 # dev
 

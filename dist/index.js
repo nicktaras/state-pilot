@@ -68,6 +68,8 @@ var StateDriver = (function () {
         return this.eventHandler('getStoreState', storeName, this.stateStore[storeName].state[0]);
     };
     StateDriver.prototype.getAllStoreStateHistory = function (storeName) {
+        if (!this.stateStore[storeName])
+            throw new Error("Store doesn't exist");
         return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length - 1));
     };
     StateDriver.prototype.getStoreStateHistory = function (storeName, startIndex, lastIndex) {
@@ -105,9 +107,6 @@ var StateDriver = (function () {
         }
         ;
         Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
-    };
-    StateDriver.prototype.createStoreActions = function (storeName, actions) {
-        this.storeActions[storeName] = new actions();
     };
     return StateDriver;
 }());
