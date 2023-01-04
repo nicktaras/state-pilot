@@ -3,19 +3,23 @@ export class StateDriver {
   subIds: number;
   subscriptions: {};
   stateStore: {};
-
+  
   // all states are held within a store
 
-  constructor() {
+  constructor(previousState:any) {
     this.subIds = 0;
     this.subscriptions = {}
-    this.stateStore = {
-      /* 
-        view: [
-          { page: "dashboard", params: {} }
-        ]
-      */
-    };
+    if(previousState) {
+      this.stateStore = previousState;  
+    } else {
+      this.stateStore = {
+        /*
+          view: [
+            { useHistory: true/false, state: { page: "dashboard", params: {} } }
+          ]
+        */
+      };
+    }
   }
 
   // import a previously exported store
@@ -59,6 +63,9 @@ export class StateDriver {
     if(!this.stateStore[storeName]){
       throw new Error("Store doesn't exist");
     } 
+    if(!this.stateStore[storeName].useHistory){
+      throw new Error("Store has no history");
+    } 
     const _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
     return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].state[_previousIndex]);
   }
@@ -72,7 +79,8 @@ export class StateDriver {
   // get all of a store states
   public getAllStoreStateHistory(storeName) {
     if(!this.stateStore[storeName]) throw new Error("Store doesn't exist");
-    return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length -1));
+    if(!this.stateStore[storeName].useHistory === false) throw new Error("Store has no history");
+    return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length));
   }
   
   // get a selection of states from a store

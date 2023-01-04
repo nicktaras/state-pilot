@@ -2,7 +2,7 @@ export declare class StateDriver {
     subIds: number;
     subscriptions: {};
     stateStore: {};
-    constructor();
+    constructor(previousState: any);
     importStore(store: any): {};
     exportStore(): {};
     createStore(storeName: string, useHistory: boolean): any;

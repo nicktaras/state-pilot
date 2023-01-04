@@ -10,7 +10,8 @@
   },
   "scripts": {
     "build": "npx tsc",
-    "test": "jest"
+    "pretest": "npx tsc",
+    "test": "jest --coverage"
   },
   "files": [
     "dist/"

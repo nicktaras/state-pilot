@@ -5,12 +5,34 @@ test('create new store without history', () => {
   expect(stateDriver.createStore("views", false)).toEqual([]);
 });
 
+test('throw error when trying to create duplicate store', () => {
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false)
+  expect(() => { stateDriver.createStore("views", false) }).toThrow("Store name already exists");
+});
+
 test('create new store state without history', () => {
   const stateDriver = new StateDriver();
   stateDriver.createStore("views", false);
   expect(stateDriver.createStoreState("views", { path: "/home", pageName: "home" })).toEqual(
     { path: "/home", pageName: "home" }
   );
+});
+
+test('throw error when createStoreState cannot locate a store', () => {
+  const stateDriver = new StateDriver();
+  expect(() => { stateDriver.createStoreState("views", false) }).toThrow("Store doesn't exist");
+});
+
+test('throw error when previous state cannot locate a store', () => {
+  const stateDriver = new StateDriver();
+  expect(() => { stateDriver.getPreviousState("views", false) }).toThrow("Store doesn't exist");
+});
+
+test('throw error when previous state cannot locate history', () => {
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  expect(() => { stateDriver.getPreviousState("views", false) }).toThrow("Store has no history");
 });
 
 test('get current store state', () => {
@@ -63,4 +85,17 @@ test('import store data', () => {
     {"views": {"state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false}}
   )).toEqual({"views": {"state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false}});
 });
+
+test('import store data onload', () => {
+  const stateDriver = new StateDriver({"views": {"state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false}});
+  expect(stateDriver.getStoreState("views")).toEqual({"pageName": "contact", "path": "/contact"});
+});
+
+test('get previous state', () => {
+  const stateDriver = new StateDriver({"views": { "useHistory": true, "state": [{"pageName": "home", "path": "/home"}]}});
+  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
+  expect(stateDriver.getPreviousState("views", 1)).toEqual({"pageName": "home", "path": "/home"});
+});
+
+
 
