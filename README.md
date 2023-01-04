@@ -117,7 +117,7 @@ unsubscribe from a store subscription instance.
   
 ````
 
-Unsubscribe from an entire store.
+unsubscribe from an entire store.
 
 ````javascript 
   
