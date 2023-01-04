@@ -3,7 +3,7 @@ export class StateDriver {
   subIds: number;
   subscriptions: {};
   stateStore: {};
-
+  storeActions: {};
   // all states are held within a store
 
   constructor() {
@@ -107,6 +107,11 @@ export class StateDriver {
     const subs = this.subscriptions[topic];
     if(!subs) { return false };
     Object.values(subs).forEach((sub:any) => sub(...args));
+  }
+
+  // Redux style actions using a class
+  public createStoreActions (storeName:string, actions:any) {
+    this.storeActions[storeName] = new actions();
   }
   
 }

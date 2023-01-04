@@ -1,6 +1,9 @@
 # state-driver
 
-A simple State Container for any application type. This library can be used to manage application state for views and logic with history.
+This library can be used to manage application state for views and logic with history. It is minimal, small in size and made to enable the core requirements of managing state and subscribing to changes through callback functions.
+
+Beyond the constructs of this library, stores can be initialised and managed however you require using any 
+style of data structure(s) per store(s) with the option to keep history and read from it.
 
 # dev
 
@@ -18,7 +21,7 @@ Create a new store inside your application.
 
 ````
 
-This library requires stores to be made per type of state collection. For example, you may wish to keep track of the view state of your app along with user settings.
+This library requires stores to be made per type of state collection.
 
 ````javascript
   

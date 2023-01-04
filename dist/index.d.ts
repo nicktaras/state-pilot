@@ -2,6 +2,7 @@ export declare class StateDriver {
     subIds: number;
     subscriptions: {};
     stateStore: {};
+    storeActions: {};
     constructor();
     importStore(store: any): {};
     exportStore(): {};
@@ -15,4 +16,5 @@ export declare class StateDriver {
     unsubscribe(topic: any, token: any): void;
     private eventHandler;
     private publish;
+    createStoreActions(storeName: string, actions: any): void;
 }

@@ -106,6 +106,9 @@ var StateDriver = (function () {
         ;
         Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
     };
+    StateDriver.prototype.createStoreActions = function (storeName, actions) {
+        this.storeActions[storeName] = new actions();
+    };
     return StateDriver;
 }());
 export { StateDriver };
