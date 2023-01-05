@@ -29,7 +29,7 @@ This library requires stores to be made per type of state collection.
 ````javascript
   
   // @param String stateStoreName declare a name for your store
-  // @param Boolean useHistory allows store history to be read
+  // @param Boolean useHistory allows store history to be read (default is false)
   // @returns new store
   stateDriver.createStore(stateStoreName, useHistory);
 

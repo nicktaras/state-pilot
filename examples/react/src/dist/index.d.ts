@@ -5,7 +5,7 @@ export declare class StateDriver {
     constructor(previousState: any);
     importStore(store: any): {};
     exportStore(): {};
-    createStore(storeName: string, useHistory?: boolean): any;
+    createStore(storeName: string, useHistory: boolean): any;
     createStoreState(storeName: string, state: any): any;
     getPreviousState(storeName: string, previousIndex: any): any;
     applyPreviousState(storeName: string): any;
