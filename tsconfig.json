@@ -18,5 +18,5 @@
     ],
     "experimentalDecorators": true
   },
-  "exclude": ["node_modules", "**/__tests__/*", "./dist/**/*", "**/babel*.js", "**/jest*.js", "**/examples"]
+  "exclude": ["node_modules", "**/__tests__/*", "./dist/**/*", "**/babel*.js", "**/jest*.js", "**/examples", "**/coverage"]
 }

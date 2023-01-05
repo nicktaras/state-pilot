@@ -42,11 +42,10 @@ var StateDriver = (function () {
         return this.stateStore;
     };
     StateDriver.prototype.createStore = function (storeName, useHistory) {
-        if (useHistory === void 0) { useHistory = false; }
         if (this.stateStore[storeName]) {
             throw new Error("Store name already exists");
         }
-        this.stateStore[storeName] = { useHistory: useHistory, state: [], past: [] };
+        this.stateStore[storeName] = { useHistory: useHistory === true ? true : false, state: [], past: [] };
         return this.eventHandler('createStore', storeName, this.stateStore[storeName].state);
     };
     StateDriver.prototype.createStoreState = function (storeName, state) {
@@ -79,9 +78,16 @@ var StateDriver = (function () {
         if (!this.stateStore[storeName].useHistory) {
             throw new Error("Store has no history");
         }
-        this.stateStore[storeName].state.push(this.stateStore[storeName].state[this.stateStore[storeName].past.length - 2]);
-        this.stateStore[storeName].past.pop();
-        return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length - 1]);
+        var _previousIndex = 1;
+        if (this.stateStore[storeName].past.length > 1) {
+            this.stateStore[storeName].state.push(this.stateStore[storeName].state[_previousIndex]);
+            this.stateStore[storeName].past.pop();
+            console.log('past', this.stateStore[storeName]);
+            return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length - 1]);
+        }
+        else {
+            return this.eventHandler('getPreviousState', storeName, null);
+        }
     };
     StateDriver.prototype.getStoreState = function (storeName) {
         if (!this.stateStore[storeName])
@@ -91,7 +97,7 @@ var StateDriver = (function () {
     StateDriver.prototype.getAllStoreStateHistory = function (storeName) {
         if (!this.stateStore[storeName])
             throw new Error("Store doesn't exist");
-        if (!this.stateStore[storeName].useHistory)
+        if (!this.stateStore[storeName].useHistory === false)
             throw new Error("Store has no history");
         return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length));
     };
@@ -99,7 +105,7 @@ var StateDriver = (function () {
         if (!this.stateStore[storeName]) {
             throw new Error("Store doesn't exist");
         }
-        var _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
+        var _lastIndex = lastIndex >= this.stateStore[storeName].state.length - 1 ? this.stateStore[storeName].state.length : lastIndex;
         return this.eventHandler('getStoreStateHistory', storeName, this.stateStore[storeName].state.slice(startIndex, _lastIndex));
     };
     StateDriver.prototype.subscribe = function (topic, fn) {

@@ -1,6 +1,7 @@
 import React, {useState, useContext} from "react";
 import './App.css';
-import { StateDriver } from 'state-driver';
+// import { StateDriver } from 'state-driver';
+import { StateDriver } from './dist/index';
 
 // state driver initial setup
 const stateDriver = new StateDriver();
@@ -38,9 +39,8 @@ function Pub(props) {
   }
   
   function previousSettings () {
-    stateDriver.createStoreState('settings', {
-      darkMode: stateDriver.getPreviousState('settings', 1).darkMode
-    });
+    console.log(stateDriver.getPreviousState('settings', 1));
+    stateDriver.applyPreviousState('settings');
   }
 
   return (
@@ -58,7 +58,11 @@ function Sub() {
   const { stateDriver } = useContext(StateDriverContext);
 
   const unSubUserSettings = stateDriver.subscribe('settings', data => {
-    setDarkMode(data.state.darkMode.toString());
+    if(data.state){
+      setDarkMode(data.state.darkMode.toString());
+    } else {
+      setDarkMode("'no state found'");
+    }
   });
   
   return (

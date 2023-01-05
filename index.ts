@@ -5,7 +5,7 @@ export class StateDriver {
   stateStore: {};
   
   // all states are held within a store
-
+  // 75-88,100-102,114-118,123-124,137 
   constructor(previousState:any) {
     this.subIds = 0;
     this.subscriptions = {}
@@ -15,7 +15,7 @@ export class StateDriver {
       this.stateStore = {
         /*
           view: [
-            { useHistory: true/false, state: { page: "dashboard", params: {} } }
+            { useHistory: true/false, state: [{ page: "dashboard", params: {} }], past: [{ page: "dashboard", params: {} }] }
           ]
         */
       };
@@ -34,26 +34,27 @@ export class StateDriver {
   }
 
   // create a new store e.g. 'userSettings'
-  public createStore(storeName:string, useHistory:boolean) {
+  public createStore(storeName:string, useHistory=false) {
     if(this.stateStore[storeName]) {
       throw new Error("Store name already exists");
     } 
-    this.stateStore[storeName] = { useHistory: useHistory === true ? true : false, state: [] };
+    this.stateStore[storeName] = { useHistory, state: [], past: [] };
     return this.eventHandler('createStore', storeName, this.stateStore[storeName].state);
   }
   
   // create a new store state e.g. 'userSettings', [{ darkMode: true, theme: 'fresh', lang: 'en-us' }]
   // using any data structure(s) format required per store.
   public createStoreState(storeName:string, state:any) {
-    if(!this.stateStore[storeName]){ 
+    if(!this.stateStore[storeName]){
       throw new Error("Store doesn't exist");
     }
     if(this.stateStore[storeName].useHistory === false) {
       this.stateStore[storeName].state = [state];
     } else {
-      this.stateStore[storeName].state.unshift(state);
+      this.stateStore[storeName].state.push(state);
+      this.stateStore[storeName].past.push(state);
     }
-    return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[0]);
+    return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length-1]);
   }
 
   // get a previous state from a store. This could be used to allow a user to navigate through 
@@ -69,17 +70,29 @@ export class StateDriver {
     const _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
     return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].state[_previousIndex]);
   }
+    
+  public applyPreviousState(storeName:string) {
+    if(!this.stateStore[storeName]){
+      throw new Error("Store doesn't exist");
+    } 
+    if(!this.stateStore[storeName].useHistory){
+      throw new Error("Store has no history");
+    } 
+    this.stateStore[storeName].state.push(this.stateStore[storeName].state[this.stateStore[storeName].past.length-2]);
+    this.stateStore[storeName].past.pop();
+    return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length-1]);
+  }
 
   // get most recent stores state
   public getStoreState(storeName:string) {
     if(!this.stateStore[storeName]) throw new Error("Store doesn't exist");
-    return this.eventHandler('getStoreState', storeName, this.stateStore[storeName].state[0]);
+    return this.eventHandler('getStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length-1]);
   }
 
   // get all of a store states
   public getAllStoreStateHistory(storeName) {
     if(!this.stateStore[storeName]) throw new Error("Store doesn't exist");
-    if(!this.stateStore[storeName].useHistory === false) throw new Error("Store has no history");
+    if(!this.stateStore[storeName].useHistory) throw new Error("Store has no history");
     return this.eventHandler('getAllStoreStateHistory', storeName, this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length));
   }
   
