@@ -5,7 +5,7 @@ export class StateDriver {
   stateStore: {};
   
   // all states are held within a store
-  // 75-88,100-102,114-118,123-124,137 
+  
   constructor(previousState:any) {
     this.subIds = 0;
     this.subscriptions = {}
