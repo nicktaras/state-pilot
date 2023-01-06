@@ -58,7 +58,7 @@ get a stores state history from a select number of events.
   stateDriver.getStoreStateHistory(stateStoreName:string, startIndex:number, lastIndex:number);
 ````
 
-get an entre stores state history.
+get a stores entire state history.
 
 ````javascript 
   // @params string stateStoreName
