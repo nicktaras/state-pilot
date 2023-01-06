@@ -115,6 +115,38 @@ unsubscribe from an entire store.
   stateDriver.unsubscribe('userSettings');
 ````
 
+example
+
+````javascript
+
+  import { StateDriver } from 'state-driver';
+
+  // create new instance of StateDriver
+  const stateDriver = new StateDriver();
+  
+  // create some stores
+  stateDriver.createStore('userSettings', true);
+  stateDriver.createStore('viewNavigation', true);
+
+  // add a view state
+  stateDriver.createStoreState('viewNavigation', { path: '/home', name: 'home' });
+  // add a settings state
+  stateDriver.createStoreState('userSettings', { darkMode: true });
+  
+  // add some subscriptions to listen for changes
+  const unSubscribeUserSettings = stateDriver.unsubscribe('userSettings', data => { /* do something with data */ });
+  const unSubscribeVieNavigation = stateDriver.unsubscribe('viewNavigation', data => { /* do something with data */ }););
+
+  // invoke state changes which will trigger the subscriptions
+  stateDriver.createStoreState('userSettings', { darkMode: false });
+  stateDriver.createStoreState('viewNavigation', { path: '/contact', name: 'contact' });
+
+````
+
+Please also see the unit tests for usage of the library.
+
+
+
 
 
 
