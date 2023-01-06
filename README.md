@@ -89,7 +89,7 @@ subscribe to a store.
   stateDriver.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
 ````
 
-create store action. Recommended to provide for more descriptive state change triggers.
+create store action to provide for more descriptive state change triggers.
 
 ````javascript 
   // @params actionName String unique name of the action e.g. "DARK_MODE_TOGGLE"
