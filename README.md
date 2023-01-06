@@ -130,6 +130,7 @@ example
 
   // add a view state
   stateDriver.createStoreState('viewNavigation', { path: '/home', name: 'home' });
+  
   // add a settings state
   stateDriver.createStoreState('userSettings', { darkMode: true });
   
