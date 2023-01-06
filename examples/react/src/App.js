@@ -9,6 +9,8 @@ const stateDriver = new StateDriver();
 stateDriver.createStore('settings', true);
 // add settings store initial state
 stateDriver.createStoreState('settings', { darkMode: true });
+// example action
+stateDriver.createAction('TOGGLE_DARK_MODE', 'settings', 'darkMode', false, function(s) { return !s });
 // provide state driver instance to React Context API
 const StateDriverContext = React.createContext(stateDriver);
 
@@ -28,14 +30,12 @@ function App() {
   );
 }
 
-function Pub(props) {
+function Pub() {
 
   const { stateDriver } = useContext(StateDriverContext);
 
   function toggleSettings () {
-    stateDriver.createStoreState('settings', { 
-      darkMode: !stateDriver.getStoreState('settings').darkMode
-    });
+    stateDriver.actions.TOGGLE_DARK_MODE(stateDriver.getStoreState('settings').darkMode);
   }
   
   function previousSettings () {
@@ -51,13 +51,17 @@ function Pub(props) {
   );
 }
 
+let unSubUserSettings = undefined;
+
 function Sub() {
 
   const [darkMode, setDarkMode] = useState("true");
 
   const { stateDriver } = useContext(StateDriverContext);
 
-  const unSubUserSettings = stateDriver.subscribe('settings', data => {
+  if(unSubUserSettings) unSubUserSettings();
+
+  unSubUserSettings = stateDriver.subscribe('settings', data => {
     if(data.state){
       setDarkMode(data.state.darkMode.toString());
     } else {

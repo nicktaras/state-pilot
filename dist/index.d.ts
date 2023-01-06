@@ -2,11 +2,14 @@ export declare class StateDriver {
     subIds: number;
     subscriptions: {};
     stateStore: {};
+    actions: object;
     constructor(previousState: any);
     importStore(store: any): {};
     exportStore(): {};
+    private throwErrorCheck;
     createStore(storeName: string, useHistory?: boolean): any;
     createStoreState(storeName: string, state: any): any;
+    createAction(actionName: any, store: any, subStoreKey: any, isAsync: any, fn: any): void;
     getPreviousState(storeName: string, previousIndex: any): any;
     applyPreviousState(storeName: string): any;
     getStoreState(storeName: string): any;

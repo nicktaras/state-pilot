@@ -1,6 +1,6 @@
 # state-driver
 
-This library is minimal, small (5kb) and can be used to manage and subscribe to changes in your applications state.
+This library is minimal, small (10kb) and can be used to manage and subscribe to changes in your applications state.
 
 Beyond the few methods this library provides, state stores can be initialised and managed using any 
 style of data structure(s) with the option to keep history per store.
@@ -105,6 +105,20 @@ subscribe to a store.
   // triggered event will be caught by the subscribers call back
   stateDriver.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
   
+  
+````
+
+create store action. Recommended for larger applicaions, creating actions may help descibe which events trigger which changes to the store.
+
+````javascript 
+ 
+  // @params actionName String unique name of the action e.g. "DARK_MODE_TOGGLE"
+  // @params store String store to update
+  // @params subStoreKey String points to the sub state key you wish to update e.g. store['darkMode']
+  // @params isAsync Boolean where actions can be sync or async
+  // @params fn Function this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
+  // @returns void
+  stateDriver.createAction(actionName, store, subStoreKey, isAsync, fn);
   
 ````
 
