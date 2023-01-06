@@ -128,14 +128,14 @@ example
   stateDriver.createStore('userSettings', true);
   stateDriver.createStore('viewNavigation', true);
 
-  // create a store action
-  stateDriver.createAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', false, function(s) { return !s });
-
   // add a view state
   stateDriver.createStoreState('viewNavigation', { path: '/home', name: 'home' });
   
   // add a settings state
   stateDriver.createStoreState('userSettings', { darkMode: true });
+
+  // create a store action
+  stateDriver.createAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', false, function(s) { return !s });
   
   // add some subscriptions to listen for changes
   const unSubscribeUserSettings = stateDriver.unsubscribe('userSettings', data => { /* do something with data */ });
