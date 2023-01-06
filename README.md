@@ -128,6 +128,9 @@ example
   stateDriver.createStore('userSettings', true);
   stateDriver.createStore('viewNavigation', true);
 
+  // create a store action
+  stateDriver.createAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', false, function(s) { return !s });
+
   // add a view state
   stateDriver.createStoreState('viewNavigation', { path: '/home', name: 'home' });
   
@@ -138,9 +141,11 @@ example
   const unSubscribeUserSettings = stateDriver.unsubscribe('userSettings', data => { /* do something with data */ });
   const unSubscribeVieNavigation = stateDriver.unsubscribe('viewNavigation', data => { /* do something with data */ }););
 
-  // invoke state changes which will trigger the subscriptions
-  stateDriver.createStoreState('userSettings', { darkMode: false });
+  // invoke direct state changes to be recieved by subscribers
   stateDriver.createStoreState('viewNavigation', { path: '/contact', name: 'contact' });
+  
+  // invoke state change via actions to be recieved by subscribers
+  stateDriver.actions.TOGGLE_DARK_MODE(stateDriver.getStoreState('userSettings').darkMode);
 
 ````
 
