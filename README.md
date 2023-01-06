@@ -143,7 +143,7 @@ example
 
 ````
 
-Please also see the unit tests for usage of the library.
+Please see the unit tests for furher usage of the library.
 
 
 
