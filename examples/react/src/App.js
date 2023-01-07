@@ -5,12 +5,16 @@ import { StateDriver } from './dist/index';
 
 // state driver initial setup
 const stateDriver = new StateDriver();
+
 // create settings store
 stateDriver.createStore('settings', true);
+
 // add settings store initial state
 stateDriver.createStoreState('settings', { darkMode: true });
+
 // example action
 stateDriver.createAction('TOGGLE_DARK_MODE', 'settings', 'darkMode', false, function(s) { return !s });
+
 // provide state driver instance to React Context API
 const StateDriverContext = React.createContext(stateDriver);
 
@@ -39,7 +43,6 @@ function Pub() {
   }
   
   function previousSettings () {
-    console.log(stateDriver.getPreviousState('settings', 1));
     stateDriver.applyPreviousState('settings');
   }
 

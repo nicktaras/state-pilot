@@ -24,6 +24,11 @@ test('throw error when createStoreState cannot locate a store', () => {
   expect(() => { stateDriver.createStoreState("views", false) }).toThrow("Store doesn't exist");
 });
 
+test('throw error when createStoreState cannot locate a store', () => {
+  const stateDriver = new StateDriver();
+  expect(() => { stateDriver.getStoreState("views", false) }).toThrow("Store doesn't exist");
+});
+
 test('throw error when previous state cannot locate a store', () => {
   const stateDriver = new StateDriver();
   expect(() => { stateDriver.getPreviousState("views", false) }).toThrow("Store doesn't exist");
@@ -163,3 +168,58 @@ test('throw error when applyPreviousState cannot locate history', () => {
   stateDriver.createStore("views", false);
   expect(() => { stateDriver.applyPreviousState("views") }).toThrow("Store has no history");
 });
+
+test('throw error when store action is duplicated', () => {
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  stateDriver.createStoreState("views", { path: "/settings" });
+  stateDriver.createAction("CHANGE_VIEW", "views", "path", false, () => {});
+  expect(() => {stateDriver.createAction("CHANGE_VIEW", "views", "path", false, () => {}) }).toThrow("Action already exists");
+});
+
+test('create non async action for view store', () => {
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  stateDriver.createStoreState("views", { path: "/settings" });
+  stateDriver.createAction("CHANGE_VIEW", "views", "path", false, (newState) => { return newState });
+  expect(stateDriver.actions["CHANGE_VIEW"]("/home")).toEqual({ path: "/home" });
+});
+
+test('create async action for view store', async () => {
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  stateDriver.createStoreState("views", { path: "/settings" });
+  stateDriver.createAction("CHANGE_VIEW", "views", "path", true, async (newState) => { return Promise.resolve(newState) });
+  const out = await stateDriver.actions["CHANGE_VIEW"]("/home");
+  expect(out).toEqual({ path: "/home" });
+});
+
+test('subscribe to a store', () => {
+  const mockCallback = jest.fn();
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  stateDriver.createStoreState("views", { path: "/settings" });
+  const unSubViews = stateDriver.subscribe('views', mockCallback());
+  expect(typeof unSubViews).toEqual("function");
+});
+
+test('unsubscribe from a store', () => {
+  const mockCallback = jest.fn();
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  stateDriver.createStoreState("views", { path: "/settings" });
+  const unSubViews = stateDriver.subscribe('views', mockCallback());
+  expect(unSubViews()).toEqual("unsubcribed from store views with subscription id 1");
+});
+
+test('subscribe to a store', async () => {
+  const mockCallback = jest.fn();
+  const stateDriver = new StateDriver();
+  stateDriver.createStore("views", false);
+  stateDriver.createStoreState("views", { path: "/settings" });
+  const unSubViews = stateDriver.subscribe('views', mockCallback());
+  stateDriver.createStoreState("views", { path: "/home" });
+  expect(mockCallback.mock.calls).toHaveLength(1);
+});
+
+

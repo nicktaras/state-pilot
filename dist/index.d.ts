@@ -15,8 +15,8 @@ export declare class StateDriver {
     getStoreState(storeName: string): any;
     getAllStoreStateHistory(storeName: any): any;
     getStoreStateHistory(storeName: string, startIndex: number, lastIndex: number): any;
-    subscribe(topic: any, fn: any): () => void;
-    unsubscribe(topic: any, token: any): void;
+    subscribe(store: any, callbackFn: any): () => string;
+    unsubscribe(store: any, subId: any): string;
     private eventHandler;
     private publish;
 }

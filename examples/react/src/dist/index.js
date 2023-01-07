@@ -1,14 +1,3 @@
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -89,18 +78,18 @@ var StateDriver = (function () {
     StateDriver.prototype.exportStore = function () {
         return this.stateStore;
     };
+    StateDriver.prototype.throwErrorCheck = function (errorArgIsTrue, message) {
+        if (errorArgIsTrue)
+            throw new Error(message);
+    };
     StateDriver.prototype.createStore = function (storeName, useHistory) {
         if (useHistory === void 0) { useHistory = false; }
-        if (this.stateStore[storeName]) {
-            throw new Error("Store name already exists");
-        }
+        this.throwErrorCheck(this.stateStore[storeName], "Store name already exists");
         this.stateStore[storeName] = { useHistory: useHistory, state: [], past: [] };
         return this.eventHandler('createStore', storeName, this.stateStore[storeName].state);
     };
     StateDriver.prototype.createStoreState = function (storeName, state) {
-        if (!this.stateStore[storeName]) {
-            throw new Error("Store doesn't exist");
-        }
+        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
         if (this.stateStore[storeName].useHistory === false) {
             this.stateStore[storeName].state = [state];
         }
@@ -110,77 +99,9 @@ var StateDriver = (function () {
         }
         return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1]);
     };
-    StateDriver.prototype.getPreviousState = function (storeName, previousIndex) {
-        if (!this.stateStore[storeName]) {
-            throw new Error("Store doesn't exist");
-        }
-        if (!this.stateStore[storeName].useHistory) {
-            throw new Error("Store has no history");
-        }
-        var _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
-        return this.stateStore[storeName].state[_previousIndex];
-    };
-    StateDriver.prototype.applyPreviousState = function (storeName) {
-        if (!this.stateStore[storeName]) {
-            throw new Error("Store doesn't exist");
-        }
-        if (!this.stateStore[storeName].useHistory) {
-            throw new Error("Store has no history");
-        }
-        this.stateStore[storeName].state.push(this.stateStore[storeName].state[this.stateStore[storeName].past.length - 2]);
-        this.stateStore[storeName].past.pop();
-        return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length - 1]);
-    };
-    StateDriver.prototype.getStoreState = function (storeName) {
-        if (!this.stateStore[storeName])
-            throw new Error("Store doesn't exist");
-        return this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1];
-    };
-    StateDriver.prototype.getAllStoreStateHistory = function (storeName) {
-        if (!this.stateStore[storeName])
-            throw new Error("Store doesn't exist");
-        if (!this.stateStore[storeName].useHistory)
-            throw new Error("Store has no history");
-        this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length);
-    };
-    StateDriver.prototype.getStoreStateHistory = function (storeName, startIndex, lastIndex) {
-        if (!this.stateStore[storeName]) {
-            throw new Error("Store doesn't exist");
-        }
-        var _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
-        return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
-    };
-    StateDriver.prototype.subscribe = function (topic, fn) {
+    StateDriver.prototype.createAction = function (actionName, store, subStoreKey, isAsync, fn) {
         var _this = this;
-        if (!this.subscriptions[topic])
-            this.subscriptions[topic] = {};
-        var token = ++this.subIds;
-        this.subscriptions[topic][token] = fn;
-        return function () { return _this.unsubscribe(topic, token); };
-    };
-    StateDriver.prototype.unsubscribe = function (topic, token) {
-        if (!token)
-            delete this.subscriptions[topic];
-        this.subscriptions[topic] && (delete this.subscriptions[topic][token]);
-    };
-    StateDriver.prototype.eventHandler = function (eventName, storeName, state) {
-        this.publish(storeName, { storeName: storeName, eventName: eventName, state: state });
-        return state;
-    };
-    StateDriver.prototype.publish = function (topic) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        var subs = this.subscriptions[topic];
-        if (!subs) {
-            return false;
-        }
-        ;
-        Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
-    };
-    StateDriver.prototype.createAction = function (actionName, store, storeKey, isAsync, fn) {
-        var _this = this;
+        this.throwErrorCheck(this.actions[actionName], "Action already exists");
         if (isAsync) {
             var _fn = function (newState) { return __awaiter(_this, void 0, void 0, function () {
                 var currState, nextState, _a, _b;
@@ -190,7 +111,7 @@ var StateDriver = (function () {
                             currState = this.getStoreState(store);
                             nextState = currState;
                             _a = nextState;
-                            _b = 'storeKey';
+                            _b = subStoreKey;
                             return [4, fn(newState)];
                         case 1:
                             _a[_b] = _c.sent();
@@ -202,12 +123,69 @@ var StateDriver = (function () {
         }
         else {
             var _fn = function (newState) {
-                var nextState = __assign({}, _this.getStoreState(store));
-                nextState[storeKey] = fn(newState);
+                var nextState = Object.assign({}, _this.getStoreState(store));
+                nextState[subStoreKey] = fn(newState);
                 return _this.createStoreState(store, nextState);
             };
             this.actions[actionName] = _fn.bind(this);
         }
+    };
+    StateDriver.prototype.getPreviousState = function (storeName, previousIndex) {
+        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        var _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
+        return this.stateStore[storeName].state[_previousIndex];
+    };
+    StateDriver.prototype.applyPreviousState = function (storeName) {
+        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        this.stateStore[storeName].state.push(this.stateStore[storeName].state[this.stateStore[storeName].past.length - 2]);
+        this.stateStore[storeName].past.pop();
+        return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length - 1]);
+    };
+    StateDriver.prototype.getStoreState = function (storeName) {
+        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        return this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1];
+    };
+    StateDriver.prototype.getAllStoreStateHistory = function (storeName) {
+        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        return this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length);
+    };
+    StateDriver.prototype.getStoreStateHistory = function (storeName, startIndex, lastIndex) {
+        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        var _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
+        return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
+    };
+    StateDriver.prototype.subscribe = function (store, fn) {
+        var _this = this;
+        if (!this.subscriptions[store])
+            this.subscriptions[store] = {};
+        var token = ++this.subIds;
+        this.subscriptions[store][token] = fn;
+        return function () { return _this.unsubscribe(store, token); };
+    };
+    StateDriver.prototype.unsubscribe = function (store, token) {
+        if (!token)
+            delete this.subscriptions[store];
+        this.subscriptions[store] && (delete this.subscriptions[store][token]);
+    };
+    StateDriver.prototype.eventHandler = function (eventName, storeName, state) {
+        this.publish(storeName, { storeName: storeName, eventName: eventName, state: state });
+        return state;
+    };
+    StateDriver.prototype.publish = function (store) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        var subs = this.subscriptions[store];
+        if (!subs) {
+            return false;
+        }
+        ;
+        Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
     };
     return StateDriver;
 }());

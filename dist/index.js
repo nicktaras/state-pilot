@@ -158,34 +158,38 @@ var StateDriver = (function () {
         var _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
         return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
     };
-    StateDriver.prototype.subscribe = function (topic, fn) {
+    StateDriver.prototype.subscribe = function (store, callbackFn) {
         var _this = this;
-        if (!this.subscriptions[topic])
-            this.subscriptions[topic] = {};
-        var token = ++this.subIds;
-        this.subscriptions[topic][token] = fn;
-        return function () { return _this.unsubscribe(topic, token); };
+        if (!this.subscriptions[store])
+            this.subscriptions[store] = {};
+        var subId = ++this.subIds;
+        this.subscriptions[store][subId] = callbackFn;
+        return function () { return _this.unsubscribe(store, subId); };
     };
-    StateDriver.prototype.unsubscribe = function (topic, token) {
-        if (!token)
-            delete this.subscriptions[topic];
-        this.subscriptions[topic] && (delete this.subscriptions[topic][token]);
+    StateDriver.prototype.unsubscribe = function (store, subId) {
+        if (!subId)
+            delete this.subscriptions[store];
+        this.subscriptions[store] && (delete this.subscriptions[store][subId]);
+        return "unsubcribed from store ".concat(store, " with subscription id ").concat(subId);
     };
     StateDriver.prototype.eventHandler = function (eventName, storeName, state) {
         this.publish(storeName, { storeName: storeName, eventName: eventName, state: state });
         return state;
     };
-    StateDriver.prototype.publish = function (topic) {
+    StateDriver.prototype.publish = function (store) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        var subs = this.subscriptions[topic];
+        var subs = this.subscriptions[store];
         if (!subs) {
             return false;
         }
         ;
-        Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
+        Object.values(subs).forEach(function (sub) {
+            if (sub)
+                sub.apply(void 0, __spreadArray([], __read(args), false));
+        });
     };
     return StateDriver;
 }());
