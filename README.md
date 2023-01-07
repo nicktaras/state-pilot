@@ -26,8 +26,8 @@ Adding State Driver into your application
 Create a new store inside your application.
 
 ````javascript
-  // @param String stateStoreName declare a name for your store
-  // @param Boolean useHistory will keep record of changes
+  // @param string stateStoreName declare a name for your store
+  // @param boolean useHistory will keep record of changes
   // @returns new store
   stateDriver.createStore(stateStoreName, useHistory);
 ````
@@ -92,11 +92,11 @@ subscribe to a store.
 create store action to provide for more descriptive state change triggers.
 
 ````javascript 
-  // @params actionName String unique name of the action e.g. "DARK_MODE_TOGGLE"
-  // @params store String store to update
-  // @params subStoreKey String points to the sub state key you wish to update e.g. store['darkMode']
-  // @params isAsync Boolean where actions can be sync or async
-  // @params fn Function this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
+  // @params string actionName unique name of the action e.g. "DARK_MODE_TOGGLE"
+  // @params string store store to update
+  // @params string subStoreKey points to the sub state key you wish to update e.g. store['darkMode']
+  // @params boolean isAsync where actions can be sync or async
+  // @params Function fn this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
   // @returns void
   stateDriver.createAction(actionName, store, subStoreKey, isAsync, fn);
 ````
