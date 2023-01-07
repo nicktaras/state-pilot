@@ -63,7 +63,7 @@ get a stores entire state history.
 ````javascript 
   // @params string stateStoreName
   // @returns all store state history
-  stateDriver.getAllStoreStateHistory(stateStoreName:string);
+  stateDriver.getAllStoreStateHistory(stateStoreName);
 ````
 
 import all stores (from a previously exported store).
