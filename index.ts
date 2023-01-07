@@ -3,7 +3,7 @@ export class StateDriver {
   subIds: number;
   subscriptions: {};
   stateStore: {};
-  actions: object; // 89-118,132,149    
+  actions: object;
   
   constructor(previousState:any) {
     this.subIds = 0;
