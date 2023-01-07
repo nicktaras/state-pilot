@@ -15,15 +15,13 @@ npm run test  - test the logic
 
 # usage
 
-Create a new store inside your application.
+Adding State Driver into your application
 
 ````javascript
-  // @param Object PreviousState a previous store state exported from the store.
-  // @returns void
-  const stateDriver = new StateDriver(previousState);
+  import { StateDriver } from 'state-driver';
 ````
 
-This library requires stores to be made per type of state collection.
+Create a new store inside your application.
 
 ````javascript
   // @param String stateStoreName declare a name for your store
@@ -48,7 +46,7 @@ Get a stores most recent state.
   stateDriver.getStoreState();
 ````
 
-get a stores state history from a select number of events.
+get a stores state history from a range of past events.
 
 ````javascript 
   // @params string stateStoreName
@@ -101,7 +99,7 @@ create store action to provide for more descriptive state change triggers.
   stateDriver.createAction(actionName, store, subStoreKey, isAsync, fn);
 ````
 
-unsubscribe from a store subscription instance.
+unsubscribe from a store subscription variable instance.
 
 ````javascript
   // @description unsubscribe from single subscription
@@ -111,11 +109,11 @@ unsubscribe from a store subscription instance.
 unsubscribe from an entire store.
 
 ````javascript 
-  // @description unsubscribe from all store subscriptions
+  // @description unsubscribe all subscriptions from a store
   stateDriver.unsubscribe('userSettings');
 ````
 
-example
+example use
 
 ````javascript
 
