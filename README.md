@@ -149,8 +149,6 @@ example
 
 ````
 
-Please see the unit tests for furher usage of the library.
-
 
 
 
