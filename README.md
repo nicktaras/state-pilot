@@ -113,7 +113,7 @@ unsubscribe from an entire store.
   stateDriver.unsubscribe('userSettings');
 ````
 
-example use
+example use of library
 
 ````javascript
 
@@ -122,14 +122,14 @@ example use
   // create new instance of StateDriver
   const stateDriver = new StateDriver();
   
-  // create some stores
+  // create stores
   stateDriver.createStore('userSettings', true);
   stateDriver.createStore('viewNavigation', true);
 
   // add a view state
   stateDriver.createStoreState('viewNavigation', { path: '/home', name: 'home' });
   
-  // add a settings state
+  // add a user settings state
   stateDriver.createStoreState('userSettings', { darkMode: true });
 
   // create a store action
