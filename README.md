@@ -38,7 +38,7 @@ Add a new state to a store.
   // @params string stateStoreName store
   // @params object state data 
   // @returns new store state
-  stateDriver.createStoreState(stateStoreName:string, state:any);
+  stateDriver.createStoreState(stateStoreName, state);
 ````
 
 Get a stores most recent state.
@@ -55,7 +55,7 @@ get a stores state history from a range of past events.
   // @params number startIndex
   // @params number lastIndex
   // @returns store state history from range
-  stateDriver.getStoreStateHistory(stateStoreName:string, startIndex:number, lastIndex:number);
+  stateDriver.getStoreStateHistory(stateStoreName, startIndex, lastIndex);
 ````
 
 get a stores entire state history.
