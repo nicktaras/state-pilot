@@ -1,6 +1,6 @@
 # state-driver
 
-This library is minimal, small (10kb) and can be used to manage and subscribe to changes in your applications state.
+This library can be used to manage and subscribe to changes in your applications state.
 
 Key features:
 
