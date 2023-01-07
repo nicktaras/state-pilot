@@ -1,11 +1,7 @@
 # state-driver
 
 This library is minimal, small (10kb) and can be used to manage and subscribe to changes in your applications state.
-
-Beyond the few methods this library provides, state stores can be initialised and managed using any 
-style of data structure(s) with the option to keep history per store.
-
-See this github repo's /examples of how this library can be used.
+State stores can be initialised and managed using any style of data structure(s) with the option to define custom state event triggers and retain history per store.
 
 # dev
 
