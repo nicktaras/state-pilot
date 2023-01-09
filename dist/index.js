@@ -95,9 +95,17 @@ var StateDriver = (function () {
         }
         else {
             this.stateStore[storeName].state.push(state);
-            this.stateStore[storeName].past.push(state);
+            this.createPastStoreState(storeName, state);
         }
         return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1]);
+    };
+    StateDriver.prototype.createPastStoreState = function (storeName, state) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                Promise.resolve(this.stateStore[storeName].past.push(state));
+                return [2];
+            });
+        });
     };
     StateDriver.prototype.createAction = function (actionName, store, subStoreKey, isAsync, fn) {
         var _this = this;

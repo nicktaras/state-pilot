@@ -95,9 +95,17 @@ var StateDriver = (function () {
         }
         else {
             this.stateStore[storeName].state.push(state);
-            this.stateStore[storeName].past.push(state);
+            this.createPastStoreState(storeName, state);
         }
         return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1]);
+    };
+    StateDriver.prototype.createPastStoreState = function (storeName, state) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                Promise.resolve(this.stateStore[storeName].past.push(state));
+                return [2];
+            });
+        });
     };
     StateDriver.prototype.createAction = function (actionName, store, subStoreKey, isAsync, fn) {
         var _this = this;
@@ -158,20 +166,22 @@ var StateDriver = (function () {
         var _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
         return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
     };
-    StateDriver.prototype.subscribe = function (store, fn) {
+    StateDriver.prototype.subscribe = function (store, callbackFn) {
         var _this = this;
         if (!this.subscriptions[store])
             this.subscriptions[store] = {};
-        var token = ++this.subIds;
-        this.subscriptions[store][token] = fn;
-        return function () { return _this.unsubscribe(store, token); };
+        var subId = ++this.subIds;
+        this.subscriptions[store][subId] = callbackFn;
+        return function () { return _this.unsubscribe(store, subId); };
     };
-    StateDriver.prototype.unsubscribe = function (store, token) {
-        if (!token)
+    StateDriver.prototype.unsubscribe = function (store, subId) {
+        if (!subId)
             delete this.subscriptions[store];
-        this.subscriptions[store] && (delete this.subscriptions[store][token]);
+        this.subscriptions[store] && (delete this.subscriptions[store][subId]);
+        return "unsubcribed from store ".concat(store, " with subscription id ").concat(subId);
     };
     StateDriver.prototype.eventHandler = function (eventName, storeName, state) {
+        window.ttt = { storeName: storeName, eventName: eventName, state: state };
         this.publish(storeName, { storeName: storeName, eventName: eventName, state: state });
         return state;
     };
@@ -185,7 +195,10 @@ var StateDriver = (function () {
             return false;
         }
         ;
-        Object.values(subs).forEach(function (sub) { return sub.apply(void 0, __spreadArray([], __read(args), false)); });
+        Object.values(subs).forEach(function (sub) {
+            if (sub)
+                sub.apply(void 0, __spreadArray([], __read(args), false));
+        });
     };
     return StateDriver;
 }());

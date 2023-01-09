@@ -47,9 +47,13 @@ export class StateDriver {
       this.stateStore[storeName].state = [state];
     } else {
       this.stateStore[storeName].state.push(state);
-      this.stateStore[storeName].past.push(state);
+      this.createPastStoreState(storeName, state);
     }
     return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length-1]);
+  }
+
+  async createPastStoreState(storeName:string, state:any) {
+    Promise.resolve(this.stateStore[storeName].past.push(state));
   }
 
   public createAction(actionName, store, subStoreKey, isAsync, fn) {

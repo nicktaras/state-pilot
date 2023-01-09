@@ -39,7 +39,10 @@ function Pub() {
   const { stateDriver } = useContext(StateDriverContext);
 
   function toggleSettings () {
-    stateDriver.actions.TOGGLE_DARK_MODE(stateDriver.getStoreState('settings').darkMode);
+
+    const nextState = stateDriver.getStoreState('settings') ? stateDriver.getStoreState('settings').darkMode : false;
+
+    stateDriver.actions.TOGGLE_DARK_MODE(nextState);
   }
   
   function previousSettings () {
@@ -49,7 +52,7 @@ function Pub() {
   return (
     <p>
       <button onClick={e => { toggleSettings(e) }}>Toggle State Change Event</button>&nbsp;&nbsp;&nbsp;
-      <button onClick={e => { previousSettings(e) }}>Undo/Redo Change Event</button>
+      <button onClick={e => { previousSettings(e) }}>Undo Change Event</button>
     </p>
   );
 }

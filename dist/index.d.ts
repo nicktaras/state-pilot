@@ -9,6 +9,7 @@ export declare class StateDriver {
     private throwErrorCheck;
     createStore(storeName: string, useHistory?: boolean): any;
     createStoreState(storeName: string, state: any): any;
+    createPastStoreState(storeName: string, state: any): Promise<void>;
     createAction(actionName: any, store: any, subStoreKey: any, isAsync: any, fn: any): void;
     getPreviousState(storeName: string, previousIndex: any): any;
     applyPreviousState(storeName: string): any;
