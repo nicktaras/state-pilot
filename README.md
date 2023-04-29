@@ -141,7 +141,7 @@ example use of library
   const unSubscribeUserSettings = stateDriver.unsubscribe('userSettings', data => { /* do something with data */ });
   const unSubscribeVieNavigation = stateDriver.unsubscribe('viewNavigation', data => { /* do something with data */ }););
 
-  // invoke direct state changes to be recieved by subscribers
+  // invoke state changes to be recieved by subscribers
   stateDriver.createStoreState('viewNavigation', { path: '/contact', name: 'contact' });
   
   // invoke state change via actions to be recieved by subscribers
