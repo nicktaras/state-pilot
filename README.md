@@ -1,4 +1,4 @@
-# state-driver
+# state-pilot
 
 This library can be used to manage and subscribe to changes in your applications state.
 
@@ -17,7 +17,7 @@ npm run test  - test the logic
 
 # usage
 
-Adding State Driver into your application
+Adding State Pilot into your application
 
 ````javascript
   import { StateDriver } from 'state-driver';
