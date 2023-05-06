@@ -123,7 +123,7 @@ example use of library
   import { StatePilot } from 'state-pilot';
 
   // create new instance of statePilot
-  const tatePilot = new statePilot();
+  const statePilot = new statePilot();
   
   // create stores
   statePilot.createStore('userSettings', true);
