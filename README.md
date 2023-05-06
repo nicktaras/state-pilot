@@ -1,35 +1,36 @@
 # state-pilot
 
-This library can be used to manage and subscribe to changes in your applications state.
+State Pilot is a library designed to simplify state management in your JavaScript or TypeScript applications. With State Pilot, you can manage an application's lifecycle state, subscribe to changes in your data stores, and trigger custom named actions. Whether you're working with a specific framework or developing a library, State Pilot is library and framework agnostic.
 
-Key features:
+This library is in early stages of development. 
 
-- event history
-- store subscriptions
-- custom event triggers
-- for use with any framwork or library
+Areas under review:
 
-# dev
+- Considering sub state functionality with regards to subscriptions, where e.g. if a store has 3 fields and one is updated, all are dispatched when an update action to one of the fields is triggered. In this case it makes sense to dispatch the changed field only
+
+- Integration with React. Simplification of the current example code.
+
+## dev
 
 npm run build - build the ts file
 
 npm run test  - test the logic
 
-# usage
+## usage
 
 Adding State Pilot into your application
 
 ````javascript
-  import { StateDriver } from 'state-driver';
+  import { StatePilot } from 'state-pilot';
 ````
 
 Create a new store inside your application.
 
 ````javascript
   // @param string stateStoreName declare a name for your store
-  // @param boolean useHistory will keep record of changes
+  // @param boolean useHistory (optional | defaults to false) will keep record of changes
   // @returns new store
-  stateDriver.createStore(stateStoreName, useHistory);
+  statePilot.createStore(stateStoreName, useHistory);
 ````
 
 Add a new state to a store.
@@ -38,14 +39,14 @@ Add a new state to a store.
   // @params string stateStoreName store
   // @params object state data 
   // @returns new store state
-  stateDriver.createStoreState(stateStoreName, state);
+  statePilot.createStoreState(stateStoreName, state);
 ````
 
 Get a stores most recent state.
 
 ````javascript 
   // @returns currrent store state
-  stateDriver.getStoreState();
+  statePilot.getStoreState();
 ````
 
 get a stores state history from a range of past events.
@@ -55,7 +56,7 @@ get a stores state history from a range of past events.
   // @params number startIndex
   // @params number lastIndex
   // @returns store state history from range
-  stateDriver.getStoreStateHistory(stateStoreName, startIndex, lastIndex);
+  statePilot.getStoreStateHistory(stateStoreName, startIndex, lastIndex);
 ````
 
 get a stores entire state history.
@@ -63,7 +64,7 @@ get a stores entire state history.
 ````javascript 
   // @params string stateStoreName
   // @returns all store state history
-  stateDriver.getAllStoreStateHistory(stateStoreName);
+  statePilot.getAllStoreStateHistory(stateStoreName);
 ````
 
 import all stores (from a previously exported store).
@@ -71,22 +72,22 @@ import all stores (from a previously exported store).
 ````javascript 
   // @params object store provide a valid store object from previous session
   // @returns object store
-  stateDriver.importStore(store);
+  statePilot.importStore(store);
 ````
 
 export all stores.
 
 ````javascript 
   // @returns object store
-  stateDriver.exportStore();
+  statePilot.exportStore();
 ````
 
 subscribe to a store.
 
 ````javascript 
-  const unSubUserSettings = stateDriver.subscribe('userSettings', data => console.log('darkMode has been set', data));
+  const unSubUserSettings = statePilot.subscribe('userSettings', data => console.log('darkMode has been set', data));
   // triggered event will be caught by the subscribers call back
-  stateDriver.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
+  statePilot.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
 ````
 
 create store action to provide for more descriptive state change triggers.
@@ -95,10 +96,10 @@ create store action to provide for more descriptive state change triggers.
   // @params string actionName unique name of the action e.g. "DARK_MODE_TOGGLE"
   // @params string store store to update
   // @params string subStoreKey points to the sub state key you wish to update e.g. store['darkMode']
-  // @params boolean isAsync where actions can be sync or async
   // @params Function fn this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
+  // @params boolean isAsync if the call back fn is async or not
   // @returns void
-  stateDriver.createAction(actionName, store, subStoreKey, isAsync, fn);
+  statePilot.createAction(actionName, store, subStoreKey, fn, isAsync);
 ````
 
 unsubscribe from a store subscription variable instance.
@@ -112,40 +113,40 @@ unsubscribe from an entire store.
 
 ````javascript 
   // @description unsubscribe all subscriptions from a store
-  stateDriver.unsubscribe('userSettings');
+  statePilot.unsubscribe('userSettings');
 ````
 
 example use of library
 
 ````javascript
 
-  import { StateDriver } from 'state-driver';
+  import { StatePilot } from 'state-pilot';
 
-  // create new instance of StateDriver
-  const stateDriver = new StateDriver();
+  // create new instance of statePilot
+  const tatePilot = new statePilot();
   
   // create stores
-  stateDriver.createStore('userSettings', true);
-  stateDriver.createStore('viewNavigation', true);
+  statePilot.createStore('userSettings', true);
+  statePilot.createStore('viewNavigation', true);
 
   // add a view state
-  stateDriver.createStoreState('viewNavigation', { path: '/home', name: 'home' });
+  statePilot.createStoreState('viewNavigation', { path: '/home', name: 'home' });
   
   // add a user settings state
-  stateDriver.createStoreState('userSettings', { darkMode: true });
+  statePilot.createStoreState('userSettings', { darkMode: true });
 
   // create a store action
-  stateDriver.createAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', false, function(s) { return !s });
+  statePilot.createAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', function(s) { return !s });
   
   // add some subscriptions to listen for changes
-  const unSubscribeUserSettings = stateDriver.unsubscribe('userSettings', data => { /* do something with data */ });
-  const unSubscribeVieNavigation = stateDriver.unsubscribe('viewNavigation', data => { /* do something with data */ }););
+  const unSubscribeUserSettings = statePilot.unsubscribe('userSettings', data => { /* do something with data */ });
+  const unSubscribeVieNavigation = statePilot.unsubscribe('viewNavigation', data => { /* do something with data */ }););
 
   // invoke state changes to be recieved by subscribers
-  stateDriver.createStoreState('viewNavigation', { path: '/contact', name: 'contact' });
+  statePilot.createStoreState('viewNavigation', { path: '/contact', name: 'contact' });
   
-  // invoke state change via actions to be recieved by subscribers
-  stateDriver.actions.TOGGLE_DARK_MODE(stateDriver.getStoreState('userSettings').darkMode);
+  // invoke state change via triggerAction to be recieved by subscribers
+  statePilot.triggerAction.TOGGLE_DARK_MODE(statePilot.getStoreState('userSettings').darkMode);
 
 ````
 

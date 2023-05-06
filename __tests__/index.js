@@ -1,225 +1,294 @@
-import { StateDriver } from './../dist/index';
+import {StatePilot} from "./../dist/index";
 
-test('create new store without history', () => {
-  const stateDriver = new StateDriver();
-  expect(stateDriver.createStore("views", false)).toEqual([]);
+test("create new store without history", () => {
+  const statePilot = new StatePilot();
+  expect(statePilot.createStore("views")).toEqual([]);
 });
 
-test('throw error when trying to create duplicate store', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false)
-  expect(() => { stateDriver.createStore("views", false) }).toThrow("Store name already exists");
+test("throw error when trying to create duplicate store", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  expect(() => {
+    statePilot.createStore("views");
+  }).toThrow("Store name already exists");
 });
 
-test('create new store state without history', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  expect(stateDriver.createStoreState("views", { path: "/home", pageName: "home" })).toEqual(
-    { path: "/home", pageName: "home" }
-  );
-});
-
-test('throw error when createStoreState cannot locate a store', () => {
-  const stateDriver = new StateDriver();
-  expect(() => { stateDriver.createStoreState("views", false) }).toThrow("Store doesn't exist");
-});
-
-test('throw error when createStoreState cannot locate a store', () => {
-  const stateDriver = new StateDriver();
-  expect(() => { stateDriver.getStoreState("views", false) }).toThrow("Store doesn't exist");
-});
-
-test('throw error when previous state cannot locate a store', () => {
-  const stateDriver = new StateDriver();
-  expect(() => { stateDriver.getPreviousState("views", false) }).toThrow("Store doesn't exist");
-});
-
-test('throw error when previous state cannot locate history', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  expect(() => { stateDriver.getPreviousState("views", false) }).toThrow("Store has no history");
-});
-
-test('get current store state', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/home", pageName: "home" });
-  expect(stateDriver.getStoreState("views")).toEqual(
-    { path: "/home", pageName: "home" }
-  );
-});
-
-test('get current store state history', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/home", pageName: "home" });
-  stateDriver.createStoreState("views", { path: "/about", pageName: "about" });
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  expect(stateDriver.getStoreStateHistory("views", 0, 100)).toEqual(
-    [{"pageName": "home", "path": "/home"}, {"pageName": "about", "path": "/about"}, {"pageName": "contact", "path": "/contact"}]
-  );
-});
-
-test('create a few stores and check current state history', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/about", pageName: "about" });
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  stateDriver.createStore("settings");
-  stateDriver.createStoreState("settings", { darkMode: true, privacyMode: true });
-  expect(stateDriver.getStoreStateHistory("views", 0, 100)).toEqual(
-    [{"pageName": "about", "path": "/about"}, {"pageName": "contact", "path": "/contact"}]
-  );
-  expect(stateDriver.getStoreState("settings")).toEqual(
-    {"darkMode": true, "privacyMode": true}
-  );
-});
-
-test('export store data', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  expect(stateDriver.exportStore()).toEqual(
-    { "views": {"past": [], "state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false }}
-  );
-});
-
-test('import store data', () => {
-  const stateDriver = new StateDriver();
-  expect(stateDriver.importStore(
-    {"views": {"state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false}}
-  )).toEqual(
-    {"views": {"state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false}}
-  );
-});
-
-test('import store data onload', () => {
-  const stateDriver = new StateDriver({"views": {"state": [{"pageName": "contact", "path": "/contact"}], "useHistory": false}});
-  expect(stateDriver.getStoreState("views")).toEqual({"pageName": "contact", "path": "/contact"});
-});
-
-test('get previous state', () => {
-  const stateDriver = new StateDriver({"views": { "useHistory": true, "past": [], "state": [{"pageName": "home", "path": "/home"}]}});
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
+test("create new store state without history", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
   expect(
-    stateDriver.getPreviousState("views", 0)).toEqual({"pageName": "home", "path": "/home"}
+    statePilot.createStoreState("views", {path: "/home", pageName: "home"})
+  ).toEqual({path: "/home", pageName: "home"});
+});
+
+test("throw error when createStoreState cannot locate a store", () => {
+  const statePilot = new StatePilot();
+  expect(() => {
+    statePilot.createStoreState("views");
+  }).toThrow("Store doesn't exist");
+});
+
+test("throw error when createStoreState cannot locate a store", () => {
+  const statePilot = new StatePilot();
+  expect(() => {
+    statePilot.getStoreState("views");
+  }).toThrow("Store doesn't exist");
+});
+
+test("throw error when previous state cannot locate a store", () => {
+  const statePilot = new StatePilot();
+  expect(() => {
+    statePilot.getPreviousState("views");
+  }).toThrow("Store doesn't exist");
+});
+
+test("throw error when previous state cannot locate history", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  expect(() => {
+    statePilot.getPreviousState("views");
+  }).toThrow("Store has no history");
+});
+
+test("get current store state", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", true);
+  statePilot.createStoreState("views", {path: "/home", pageName: "home"});
+  expect(statePilot.getStoreState("views")).toEqual({
+    path: "/home",
+    pageName: "home"
+  });
+});
+
+test("get current store state history", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", null, true);
+  statePilot.createStoreState("views", {path: "/home", pageName: "home"});
+  statePilot.createStoreState("views", {path: "/about", pageName: "about"});
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  expect(statePilot.getStoreStateHistory("views", 0, 100)).toEqual([
+    {pageName: "home", path: "/home"},
+    {pageName: "about", path: "/about"},
+    {pageName: "contact", path: "/contact"}
+  ]);
+});
+
+test("create a few stores and check current state history", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", null, true);
+  statePilot.createStoreState("views", {path: "/about", pageName: "about"});
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  statePilot.createStore("settings");
+  statePilot.createStoreState("settings", {darkMode: true, privacyMode: true});
+  expect(statePilot.getStoreStateHistory("views", 0, 100)).toEqual([
+    {pageName: "about", path: "/about"},
+    {pageName: "contact", path: "/contact"}
+  ]);
+  expect(statePilot.getStoreState("settings")).toEqual({
+    darkMode: true,
+    privacyMode: true
+  });
+});
+
+test("export store data", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  expect(statePilot.exportStore()).toEqual({
+    views: {
+      past: [],
+      state: [{pageName: "contact", path: "/contact"}],
+      useHistory: false
+    }
+  });
+});
+
+test("import store data", () => {
+  const statePilot = new StatePilot();
+  expect(
+    statePilot.importStore({
+      views: {
+        state: [{pageName: "contact", path: "/contact"}],
+        useHistory: false
+      }
+    })
+  ).toEqual({
+    views: {state: [{pageName: "contact", path: "/contact"}], useHistory: false}
+  });
+});
+
+test("import store data onload", () => {
+  const statePilot = new StatePilot({
+    views: {state: [{pageName: "contact", path: "/contact"}], useHistory: false}
+  });
+  expect(statePilot.getStoreState("views")).toEqual({
+    pageName: "contact",
+    path: "/contact"
+  });
+});
+
+test("get previous state", () => {
+  const statePilot = new StatePilot({
+    views: {
+      useHistory: true,
+      past: [],
+      state: [{pageName: "home", path: "/home"}]
+    }
+  });
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  expect(statePilot.getPreviousState("views", 0)).toEqual({
+    pageName: "home",
+    path: "/home"
+  });
+});
+
+test("undo single state", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", null, true);
+  statePilot.createStoreState("views", {path: "/home", pageName: "home"});
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  statePilot.createStoreState("views", {
+    path: "/settings",
+    pageName: "settings"
+  });
+  statePilot.applyPreviousState("views");
+  expect(statePilot.getStoreState("views")).toEqual({
+    path: "/contact",
+    pageName: "contact"
+  });
+});
+
+test("undo multiple states", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", null, true);
+  statePilot.createStoreState("views", {path: "/home", pageName: "home"});
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  statePilot.createStoreState("views", {
+    path: "/settings",
+    pageName: "settings"
+  });
+  statePilot.applyPreviousState("views");
+  statePilot.applyPreviousState("views");
+  expect(statePilot.getStoreState("views")).toEqual({
+    path: "/home",
+    pageName: "home"
+  });
+});
+
+test("undo multiple states until initial", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", null, true);
+  statePilot.createStoreState("views", {path: "/home", pageName: "home"});
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  statePilot.createStoreState("views", {
+    path: "/settings",
+    pageName: "settings"
+  });
+  statePilot.applyPreviousState("views");
+  statePilot.applyPreviousState("views");
+  statePilot.applyPreviousState("views");
+  expect(statePilot.getStoreState("views")).toEqual({
+    pageName: "home",
+    path: "/home"
+  });
+});
+
+test("get all state history", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views", null, true);
+  statePilot.createStoreState("views", {path: "/home", pageName: "home"});
+  statePilot.createStoreState("views", {path: "/contact", pageName: "contact"});
+  statePilot.createStoreState("views", {
+    path: "/settings",
+    pageName: "settings"
+  });
+  expect(statePilot.getAllStoreStateHistory("views")).toEqual([
+    {pageName: "home", path: "/home"},
+    {pageName: "contact", path: "/contact"},
+    {pageName: "settings", path: "/settings"}
+  ]);
+});
+
+test("throw error when applyPreviousState cannot locate a store", () => {
+  const statePilot = new StatePilot();
+  expect(() => {
+    statePilot.applyPreviousState("");
+  }).toThrow("Store doesn't exist");
+});
+
+test("throw error when applyPreviousState cannot locate history", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  expect(() => {
+    statePilot.applyPreviousState("views");
+  }).toThrow("Store has no history");
+});
+
+test("throw error when store action is duplicated", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  statePilot.createAction("CHANGE_VIEW", "views", "path", () => {});
+  expect(() => {
+    statePilot.createAction("CHANGE_VIEW", "views", "path", () => {});
+  }).toThrow("Action already exists");
+});
+
+test("create non async action for view store", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  statePilot.createAction("CHANGE_VIEW", "views", "path", (newState) => {
+    return newState;
+  });
+  expect(statePilot.triggerAction["CHANGE_VIEW"]("/home")).toEqual({
+    path: "/home"
+  });
+});
+
+test("create async action for view store", async () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  statePilot.createAction(
+    "CHANGE_VIEW",
+    "views",
+    "path",
+    async (newState) => {
+      return Promise.resolve(newState);
+    },
+    true
   );
+  const out = await statePilot.triggerAction["CHANGE_VIEW"]("/home");
+  expect(out).toEqual({path: "/home"});
 });
 
-test('undo single state', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/home", pageName: "home" });
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  stateDriver.createStoreState("views", { path: "/settings", pageName: "settings" });
-  stateDriver.applyPreviousState("views");
-  expect(
-    stateDriver.getStoreState("views")
-  ).toEqual({ path: "/contact", pageName: "contact" });
-});
-
-test('undo multiple states', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/home", pageName: "home" });
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  stateDriver.createStoreState("views", { path: "/settings", pageName: "settings" });
-  stateDriver.applyPreviousState("views");
-  stateDriver.applyPreviousState("views");
-  expect(
-    stateDriver.getStoreState("views")
-  ).toEqual({ path: "/home", pageName: "home" });
-});
-
-test('undo multiple states until null', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/home", pageName: "home" });
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  stateDriver.createStoreState("views", { path: "/settings", pageName: "settings" });
-  stateDriver.applyPreviousState("views");
-  stateDriver.applyPreviousState("views");
-  stateDriver.applyPreviousState("views");
-  expect(
-    stateDriver.getStoreState("views")
-  ).toEqual(undefined);
-});
-
-test('get all state history', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", true);
-  stateDriver.createStoreState("views", { path: "/home", pageName: "home" });
-  stateDriver.createStoreState("views", { path: "/contact", pageName: "contact" });
-  stateDriver.createStoreState("views", { path: "/settings", pageName: "settings" });
-  expect(
-    stateDriver.getAllStoreStateHistory("views")
-  ).toEqual(
-    [{"pageName": "home", "path": "/home"}, {"pageName": "contact", "path": "/contact"}, {"pageName": "settings", "path": "/settings"}]
-  );
-});
-
-test('throw error when applyPreviousState cannot locate a store', () => {
-  const stateDriver = new StateDriver();
-  expect(() => { stateDriver.applyPreviousState("") }).toThrow("Store doesn't exist");
-});
-
-test('throw error when applyPreviousState cannot locate history', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  expect(() => { stateDriver.applyPreviousState("views") }).toThrow("Store has no history");
-});
-
-test('throw error when store action is duplicated', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/settings" });
-  stateDriver.createAction("CHANGE_VIEW", "views", "path", false, () => {});
-  expect(() => {stateDriver.createAction("CHANGE_VIEW", "views", "path", false, () => {}) }).toThrow("Action already exists");
-});
-
-test('create non async action for view store', () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/settings" });
-  stateDriver.createAction("CHANGE_VIEW", "views", "path", false, (newState) => { return newState });
-  expect(stateDriver.actions["CHANGE_VIEW"]("/home")).toEqual({ path: "/home" });
-});
-
-test('create async action for view store', async () => {
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/settings" });
-  stateDriver.createAction("CHANGE_VIEW", "views", "path", true, async (newState) => { return Promise.resolve(newState) });
-  const out = await stateDriver.actions["CHANGE_VIEW"]("/home");
-  expect(out).toEqual({ path: "/home" });
-});
-
-test('subscribe to a store', () => {
+test("subscribe to a store", () => {
   const mockCallback = jest.fn();
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/settings" });
-  const unSubViews = stateDriver.subscribe('views', mockCallback());
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  const unSubViews = statePilot.subscribe("views", mockCallback());
   expect(typeof unSubViews).toEqual("function");
 });
 
-test('unsubscribe from a store', () => {
+test("unsubscribe from a store", () => {
   const mockCallback = jest.fn();
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/settings" });
-  const unSubViews = stateDriver.subscribe('views', mockCallback());
-  expect(unSubViews()).toEqual("unsubcribed from store views with subscription id 1");
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  const unSubViews = statePilot.subscribe("views", mockCallback());
+  expect(unSubViews()).toEqual(
+    "unsubcribed from store views with subscription id 1"
+  );
 });
 
-test('subscribe to a store', async () => {
+test("subscribe to a store", async () => {
   const mockCallback = jest.fn();
-  const stateDriver = new StateDriver();
-  stateDriver.createStore("views", false);
-  stateDriver.createStoreState("views", { path: "/settings" });
-  const unSubViews = stateDriver.subscribe('views', mockCallback());
-  stateDriver.createStoreState("views", { path: "/home" });
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  const unSubViews = statePilot.subscribe("views", mockCallback());
+  statePilot.createStoreState("views", {path: "/home"});
   expect(mockCallback.mock.calls).toHaveLength(1);
 });
-
-

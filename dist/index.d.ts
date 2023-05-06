@@ -1,16 +1,16 @@
-export declare class StateDriver {
+export declare class StatePilot {
     subIds: number;
     subscriptions: {};
     stateStore: {};
-    actions: object;
+    triggerAction: object;
     constructor(previousState: any);
     importStore(store: any): {};
     exportStore(): {};
     private throwErrorCheck;
-    createStore(storeName: string, useHistory?: boolean): any;
+    createStore(storeName: string, initialState: any, useHistory?: boolean): any;
     createStoreState(storeName: string, state: any): any;
     createPastStoreState(storeName: string, state: any): Promise<void>;
-    createAction(actionName: any, store: any, subStoreKey: any, isAsync: any, fn: any): void;
+    createAction(actionName: any, store: any, subStoreKey: any, fn: any, isAsync?: boolean): void;
     getPreviousState(storeName: string, previousIndex: any): any;
     applyPreviousState(storeName: string): any;
     getStoreState(storeName: string): any;

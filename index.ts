@@ -1,16 +1,15 @@
-
-export class StateDriver {
+export class StatePilot {
   subIds: number;
   subscriptions: {};
   stateStore: {};
-  actions: object;
-  
-  constructor(previousState:any) {
+  triggerAction: object;
+
+  constructor(previousState: any) {
     this.subIds = 0;
     this.subscriptions = {};
-    this.actions = {};
-    if(previousState) {
-      this.stateStore = previousState;  
+    this.triggerAction = {};
+    if (previousState) {
+      this.stateStore = previousState;
     } else {
       this.stateStore = {
         /*
@@ -31,113 +30,172 @@ export class StateDriver {
     return this.stateStore;
   }
 
-  private throwErrorCheck(errorArgIsTrue, message:string) {
-    if(errorArgIsTrue) throw new Error(message);
+  private throwErrorCheck(errorArgIsTrue, message: string) {
+    if (errorArgIsTrue) throw new Error(message);
   }
 
-  public createStore(storeName:string, useHistory=false) {
-    this.throwErrorCheck(this.stateStore[storeName], "Store name already exists");
-    this.stateStore[storeName] = { useHistory, state: [], past: [] };
-    return this.eventHandler('createStore', storeName, this.stateStore[storeName].state);
+  public createStore(storeName: string, initialState: any, useHistory = false) {
+    this.throwErrorCheck(
+      this.stateStore[storeName],
+      "Store name already exists"
+    );
+    this.stateStore[storeName] = {useHistory, state: [], past: []};
+    if (initialState) this.createStoreState(storeName, initialState);
+
+    return this.eventHandler(
+      "createStore",
+      storeName,
+      this.stateStore[storeName].state
+    );
   }
-  
-  public createStoreState(storeName:string, state:any) {
+
+  public createStoreState(storeName: string, state: any) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-    if(this.stateStore[storeName].useHistory === false) {
+    if (this.stateStore[storeName].useHistory === false) {
       this.stateStore[storeName].state = [state];
     } else {
       this.stateStore[storeName].state.push(state);
       this.createPastStoreState(storeName, state);
     }
-    return this.eventHandler('createStoreState', storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length-1]);
+    return this.eventHandler(
+      "createStoreState",
+      storeName,
+      this.stateStore[storeName].state[
+        this.stateStore[storeName].state.length - 1
+      ]
+    );
   }
 
-  async createPastStoreState(storeName:string, state:any) {
+  async createPastStoreState(storeName: string, state: any) {
     Promise.resolve(this.stateStore[storeName].past.push(state));
   }
 
-  public createAction(actionName, store, subStoreKey, isAsync, fn) {
-    this.throwErrorCheck(this.actions[actionName], "Action already exists");
-    if(isAsync) {
+  public createAction(actionName, store, subStoreKey, fn, isAsync = false) {
+    this.throwErrorCheck(
+      this.triggerAction[actionName],
+      "Action already exists"
+    );
+    if (isAsync) {
       const _fn = async (newState) => {
         const currState = this.getStoreState(store);
         let nextState = currState;
         nextState[subStoreKey] = await fn(newState);
         return this.createStoreState(store, nextState);
-      }
-      this.actions[actionName] = _fn.bind(this);
+      };
+      this.triggerAction[actionName] = _fn.bind(this);
     } else {
       const _fn = (newState) => {
         let nextState = Object.assign({}, this.getStoreState(store));
         nextState[subStoreKey] = fn(newState);
         return this.createStoreState(store, nextState);
-      }
-      this.actions[actionName] = _fn.bind(this);
+      };
+      this.triggerAction[actionName] = _fn.bind(this);
     }
   }
 
-  public getPreviousState(storeName:string, previousIndex:any) {
+  public getPreviousState(storeName: string, previousIndex: any) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-    this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
-    const _previousIndex = previousIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : previousIndex;
+    this.throwErrorCheck(
+      !this.stateStore[storeName].useHistory,
+      "Store has no history"
+    );
+    const _previousIndex =
+      previousIndex >= this.stateStore[storeName].state.length
+        ? this.stateStore[storeName].state.length
+        : previousIndex;
     return this.stateStore[storeName].state[_previousIndex];
   }
-    
-  public applyPreviousState(storeName:string) {
+
+  public applyPreviousState(storeName: string) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-    this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
-    this.stateStore[storeName].state.push(this.stateStore[storeName].state[this.stateStore[storeName].past.length-2]);
-    this.stateStore[storeName].past.pop();
-    return this.eventHandler('getPreviousState', storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length-1]);
+    this.throwErrorCheck(
+      !this.stateStore[storeName].useHistory,
+      "Store has no history"
+    );
+    if (
+      this.stateStore[storeName].state[
+        this.stateStore[storeName].past.length - 2
+      ]
+    ) {
+      this.stateStore[storeName].state.push(
+        this.stateStore[storeName].state[
+          this.stateStore[storeName].past.length - 2
+        ]
+      );
+      this.stateStore[storeName].past.pop();
+      return this.eventHandler(
+        "getPreviousState",
+        storeName,
+        this.stateStore[storeName].past[
+          this.stateStore[storeName].past.length - 1
+        ]
+      );
+    } else {
+      return "No previous state exists";
+    }
   }
 
-  public getStoreState(storeName:string) {
+  public getStoreState(storeName: string) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-    return this.stateStore[storeName].state[this.stateStore[storeName].state.length-1];
+    return this.stateStore[storeName].state[
+      this.stateStore[storeName].state.length - 1
+    ];
   }
 
   public getAllStoreStateHistory(storeName) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-    this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
-    return this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length);
+    this.throwErrorCheck(
+      !this.stateStore[storeName].useHistory,
+      "Store has no history"
+    );
+    return this.stateStore[storeName].state.slice(
+      0,
+      this.stateStore[storeName].state.length
+    );
   }
-  
-  public getStoreStateHistory(storeName:string, startIndex:number, lastIndex:number) {
+
+  public getStoreStateHistory(
+    storeName: string,
+    startIndex: number,
+    lastIndex: number
+  ) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-    this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
-    const _lastIndex = lastIndex >= this.stateStore[storeName].state.length ? this.stateStore[storeName].state.length : lastIndex;
+    this.throwErrorCheck(
+      !this.stateStore[storeName].useHistory,
+      "Store has no history"
+    );
+    const _lastIndex =
+      lastIndex >= this.stateStore[storeName].state.length
+        ? this.stateStore[storeName].state.length
+        : lastIndex;
     return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
   }
 
-  public subscribe (store, callbackFn) {
-    if(!this.subscriptions[store]) this.subscriptions[store] = {}
+  public subscribe(store, callbackFn) {
+    if (!this.subscriptions[store]) this.subscriptions[store] = {};
     const subId = ++this.subIds;
     this.subscriptions[store][subId] = callbackFn;
     return () => this.unsubscribe(store, subId);
   }
 
-  public unsubscribe (store, subId) {
-    if(!subId) delete this.subscriptions[store];
-    this.subscriptions[store] && (delete this.subscriptions[store][subId]);
+  public unsubscribe(store, subId) {
+    if (!subId) delete this.subscriptions[store];
+    this.subscriptions[store] && delete this.subscriptions[store][subId];
     return `unsubcribed from store ${store} with subscription id ${subId}`;
   }
 
-  private eventHandler(eventName:string, storeName:string, state:any) {
-    this.publish(storeName, { storeName, eventName, state });
+  private eventHandler(eventName: string, storeName: string, state: any) {
+    this.publish(storeName, {storeName, eventName, state});
     return state;
   }
 
-  private publish (store, ...args) {
+  private publish(store, ...args) {
     const subs = this.subscriptions[store];
-    if(!subs) { return false };
-    Object.values(subs).forEach((sub:any) => {
-      if(sub) sub(...args);
+    if (!subs) {
+      return false;
+    }
+    Object.values(subs).forEach((sub: any) => {
+      if (sub) sub(...args);
     });
   }
-
 }
-
-
-
-
-
