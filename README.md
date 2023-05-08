@@ -2,14 +2,6 @@
 
 State Pilot is a library designed to simplify state management in your JavaScript or TypeScript applications. With State Pilot, you can manage an application's lifecycle state, subscribe to changes in your data stores, and trigger custom named actions. 
 
-This library is in early stages of development. 
-
-Areas under review:
-
-- Considering sub state functionality with regards to subscriptions, where e.g. if a store has 3 fields and one is updated, all are dispatched when an update action to one of the fields is triggered. In this case it makes sense to dispatch the changed field only
-
-- Integration with React. Simplification of the current example code.
-
 ## dev
 
 npm run build - build the ts file
