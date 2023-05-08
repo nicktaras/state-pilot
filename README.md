@@ -4,9 +4,13 @@ State Pilot is a library designed to simplify state management in your JavaScrip
 
 ## dev
 
-npm run build - build the ts file
+build the ts file
 
-npm run test  - test the logic
+`npm run build`
+
+test the code
+
+`npm run test`
 
 ## usage
 
