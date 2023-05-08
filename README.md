@@ -134,7 +134,7 @@ unsubscribe from a store subscription variable instance.
 unsubscribe from an entire store.
 
 ````javascript 
-  // @description unsubscribe all subscriptions from a store
+  // @description unsubscribe all subscribers from a store
   statePilot.unsubscribe('userSettings');
 ````
 
