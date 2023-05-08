@@ -234,6 +234,40 @@ test("throw error when store action is duplicated", () => {
   }).toThrow("Action already exists");
 });
 
+test("can create many actions", () => {
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings", showNavBar: false});
+  statePilot.createActions([
+    {
+      name: "CHANGE_VIEW",
+      store: "views",
+      subStoreKey: "path",
+      fn: (newState) => {
+        return newState;
+      },
+      isAsync: false
+    },
+    {
+      name: "TOGGLE_NAV_BAR",
+      store: "views",
+      subStoreKey: "showNavBar",
+      fn: (s) => {
+        return !s;
+      },
+      isAsync: false
+    }
+  ]);
+  expect(statePilot.triggerAction["CHANGE_VIEW"]("/home")).toEqual({
+    path: "/home",
+    showNavBar: false
+  });
+  expect(statePilot.triggerAction["TOGGLE_NAV_BAR"](false)).toEqual({
+    path: "/home",
+    showNavBar: true
+  });
+});
+
 test("create non async action for view store", () => {
   const statePilot = new StatePilot();
   statePilot.createStore("views");

@@ -1,3 +1,5 @@
+import {StateAction} from "./types";
+
 export class StatePilot {
   subIds: number;
   subscriptions: {};
@@ -21,7 +23,7 @@ export class StatePilot {
     }
   }
 
-  public importStore(store) {
+  public importStore(store: any) {
     this.stateStore = store;
     return this.stateStore;
   }
@@ -30,7 +32,7 @@ export class StatePilot {
     return this.stateStore;
   }
 
-  private throwErrorCheck(errorArgIsTrue, message: string) {
+  private throwErrorCheck(errorArgIsTrue: boolean, message: string) {
     if (errorArgIsTrue) throw new Error(message);
   }
 
@@ -70,11 +72,26 @@ export class StatePilot {
     Promise.resolve(this.stateStore[storeName].past.push(state));
   }
 
-  public createAction(actionName, store, subStoreKey, fn, isAsync = false) {
-    this.throwErrorCheck(
-      this.triggerAction[actionName],
-      "Action already exists"
-    );
+  public createActions(actions: StateAction[]) {
+    actions.forEach(async (action) => {
+      this.createAction(
+        action.name,
+        action.store,
+        action.subStoreKey,
+        action.fn,
+        action.isAsync
+      );
+    });
+  }
+
+  public createAction(
+    name: string,
+    store: string,
+    subStoreKey: string,
+    fn: Function,
+    isAsync: boolean = false
+  ) {
+    this.throwErrorCheck(this.triggerAction[name], "Action already exists");
     if (isAsync) {
       const _fn = async (newState) => {
         const currState = this.getStoreState(store);
@@ -82,14 +99,14 @@ export class StatePilot {
         nextState[subStoreKey] = await fn(newState);
         return this.createStoreState(store, nextState);
       };
-      this.triggerAction[actionName] = _fn.bind(this);
+      this.triggerAction[name] = _fn.bind(this);
     } else {
       const _fn = (newState) => {
         let nextState = Object.assign({}, this.getStoreState(store));
         nextState[subStoreKey] = fn(newState);
         return this.createStoreState(store, nextState);
       };
-      this.triggerAction[actionName] = _fn.bind(this);
+      this.triggerAction[name] = _fn.bind(this);
     }
   }
 
@@ -142,7 +159,7 @@ export class StatePilot {
     ];
   }
 
-  public getAllStoreStateHistory(storeName) {
+  public getAllStoreStateHistory(storeName: string) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
     this.throwErrorCheck(
       !this.stateStore[storeName].useHistory,
@@ -171,14 +188,14 @@ export class StatePilot {
     return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
   }
 
-  public subscribe(store, callbackFn) {
+  public subscribe(store: string, callbackFn: Function) {
     if (!this.subscriptions[store]) this.subscriptions[store] = {};
     const subId = ++this.subIds;
     this.subscriptions[store][subId] = callbackFn;
     return () => this.unsubscribe(store, subId);
   }
 
-  public unsubscribe(store, subId) {
+  public unsubscribe(store: string, subId: number) {
     if (!subId) delete this.subscriptions[store];
     this.subscriptions[store] && delete this.subscriptions[store][subId];
     return `unsubcribed from store ${store} with subscription id ${subId}`;
@@ -189,7 +206,7 @@ export class StatePilot {
     return state;
   }
 
-  private publish(store, ...args) {
+  private publish(store: string, ...args: any) {
     const subs = this.subscriptions[store];
     if (!subs) {
       return false;

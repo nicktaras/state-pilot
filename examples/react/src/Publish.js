@@ -11,7 +11,6 @@ function Publish() {
       .getStoreState("settingsStore")
       ? statePilotInstance.getStoreState("settingsStore").darkMode
       : false;
-
     statePilotInstance.triggerAction.TOGGLE_DARK_MODE(nextState);
   }
 

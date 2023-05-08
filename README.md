@@ -93,13 +93,35 @@ subscribe to a store.
 create store action to provide for more descriptive state change triggers.
 
 ````javascript 
-  // @params string actionName unique name of the action e.g. "DARK_MODE_TOGGLE"
+  // @params string name unique name of the action e.g. "DARK_MODE_TOGGLE"
   // @params string store store to update
   // @params string subStoreKey points to the sub state key you wish to update e.g. store['darkMode']
   // @params Function fn this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
   // @params boolean isAsync if the call back fn is async or not
   // @returns void
-  statePilot.createAction(actionName, store, subStoreKey, fn, isAsync);
+  statePilot.createAction(name, store, subStoreKey, fn, isAsync);
+````
+
+create store actions as an array.
+
+````javascript 
+  // @params string name unique name of the action e.g. "DARK_MODE_TOGGLE"
+  // @params string store store to update
+  // @params string subStoreKey points to the sub state key you wish to update e.g. store['darkMode']
+  // @params Function fn this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
+  // @params boolean isAsync if the call back fn is async or not
+  // @returns void
+  statePilot.createActions(
+    [
+      {
+        name
+        store
+        subStoreKey
+        fn
+        isAsync
+      }
+    ]
+  );
 ````
 
 unsubscribe from a store subscription variable instance.

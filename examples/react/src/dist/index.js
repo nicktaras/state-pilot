@@ -109,10 +109,19 @@ var StatePilot = (function () {
             });
         });
     };
-    StatePilot.prototype.createAction = function (actionName, store, subStoreKey, fn, isAsync) {
+    StatePilot.prototype.createActions = function (actions) {
+        var _this = this;
+        actions.forEach(function (action) { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.createAction(action.name, action.store, action.subStoreKey, action.fn, action.isAsync);
+                return [2];
+            });
+        }); });
+    };
+    StatePilot.prototype.createAction = function (name, store, subStoreKey, fn, isAsync) {
         var _this = this;
         if (isAsync === void 0) { isAsync = false; }
-        this.throwErrorCheck(this.triggerAction[actionName], "Action already exists");
+        this.throwErrorCheck(this.triggerAction[name], "Action already exists");
         if (isAsync) {
             var _fn = function (newState) { return __awaiter(_this, void 0, void 0, function () {
                 var currState, nextState, _a, _b;
@@ -130,7 +139,7 @@ var StatePilot = (function () {
                     }
                 });
             }); };
-            this.triggerAction[actionName] = _fn.bind(this);
+            this.triggerAction[name] = _fn.bind(this);
         }
         else {
             var _fn = function (newState) {
@@ -138,7 +147,7 @@ var StatePilot = (function () {
                 nextState[subStoreKey] = fn(newState);
                 return _this.createStoreState(store, nextState);
             };
-            this.triggerAction[actionName] = _fn.bind(this);
+            this.triggerAction[name] = _fn.bind(this);
         }
     };
     StatePilot.prototype.getPreviousState = function (storeName, previousIndex) {
