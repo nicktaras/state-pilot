@@ -1,34 +1,45 @@
-import React from "react";
-import {StatePilotContext} from "./StatePilot/Store";
+import React, {useState, useEffect} from "react";
+
+import statePilotSingleton from "./StatePilot/StatePilotInstance";
 
 function Publish() {
-  const statePilotContext = React.useContext(StatePilotContext);
+  const statePilotInstance = statePilotSingleton.instance();
+
   function toggleSettings() {
-    const nextState = statePilotContext.getStoreState("settingsStore")
-      ? statePilotContext.getStoreState("settingsStore").darkMode
+    const nextState = statePilotSingleton
+      .instance()
+      .getStoreState("settingsStore")
+      ? statePilotInstance.getStoreState("settingsStore").darkMode
       : false;
-    statePilotContext.triggerAction.TOGGLE_DARK_MODE(nextState);
+
+    statePilotInstance.triggerAction.TOGGLE_DARK_MODE(nextState);
   }
+
   function previousSettings() {
-    statePilotContext.applyPreviousState("settingsStore");
+    statePilotInstance.applyPreviousState("settingsStore");
   }
+
   return (
-    <p>
-      <button
-        onClick={(e) => {
-          toggleSettings();
-        }}
-      >
-        Toggle Dark Mode
-      </button>
-      <button
-        onClick={(e) => {
-          previousSettings();
-        }}
-      >
-        Undo Dark Mode Step
-      </button>
-    </p>
+    <div>
+      {statePilotSingleton && (
+        <div>
+          <button
+            onClick={(e) => {
+              toggleSettings();
+            }}
+          >
+            Toggle Dark Mode
+          </button>
+          <button
+            onClick={(e) => {
+              previousSettings();
+            }}
+          >
+            Undo Dark Mode Step
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 

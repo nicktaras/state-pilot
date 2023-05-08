@@ -1,11 +1,14 @@
-import React, {useState, useContext} from "react";
-import {StatePilotContext} from "./StatePilot/Store";
+import React, {useState} from "react";
+import statePilotSingleton from "./StatePilot/StatePilotInstance";
 
 let unsubscribeUserSettings = null;
 
-function Subscribe() {
-  const statePilotContext = useContext(StatePilotContext);
-  const [darkMode, setDarkMode] = useState(undefined);
+function Subscribe(props) {
+  const statePilotInstance = statePilotSingleton.instance();
+
+  const [darkMode, setDarkMode] = useState(
+    statePilotInstance.getStoreState("settingsStore").darkMode.toString()
+  );
 
   const formatDarkMode = (data) => {
     if (data !== undefined) return data.toString();
@@ -13,7 +16,7 @@ function Subscribe() {
 
   if (unsubscribeUserSettings !== null) unsubscribeUserSettings();
 
-  unsubscribeUserSettings = statePilotContext.subscribe(
+  unsubscribeUserSettings = statePilotInstance.subscribe(
     "settingsStore",
     (data) => {
       if (data.state) {
@@ -22,14 +25,9 @@ function Subscribe() {
     }
   );
 
-  if (darkMode === undefined)
-    setDarkMode(
-      formatDarkMode(statePilotContext.getStoreState("settingsStore").darkMode)
-    );
-
   return (
     <div>
-      <div>dark Mode setting is: {darkMode}</div>
+      <div className="dark-mode-title">Dark Mode setting is: {darkMode}</div>
       <button
         style={{marginTop: "20px"}}
         onClick={(e) => {
@@ -38,6 +36,7 @@ function Subscribe() {
       >
         Unsuscribe from Settings Store Subcription to show status
       </button>
+      {props.children}
     </div>
   );
 }

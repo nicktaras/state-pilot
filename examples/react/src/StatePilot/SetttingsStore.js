@@ -13,6 +13,33 @@ const settingsStore = {
         return !s;
       }
     );
+    // This is cleaner :)
+    // statePilot.createActions([
+    // {
+    //   actionName: "TOGGLE_DARK_MODE",
+    //   actionFunction: function (s) {
+    //     return !s;
+    //   },
+    //   store: "settingsStore",
+    //   value: "darkMode",
+    // },
+    // {
+    //   actionName: "TOGGLE_DARK_MODE",
+    //   actionFunction: function (s) {
+    //     return !s;
+    //   },
+    //   store: "settingsStore",
+    //   value: "darkMode",
+    // },
+    // {
+    //   actionName: "TOGGLE_DARK_MODE",
+    //   actionFunction: function (s) {
+    //     return !s;
+    //   },
+    //   store: "settingsStore",
+    //   value: "darkMode",
+    // },
+    // ]);
   }
 };
 
