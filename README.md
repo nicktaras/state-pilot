@@ -85,7 +85,7 @@ export all stores.
 subscribe to a store.
 
 ````javascript 
-  const unSubUserSettings = statePilot.subscribe('userSettings', data => console.log('darkMode has been set', data));
+  const unSubUserSettings = statePilot.subscribe('userSettings', data => console.log('user settings store updated', data));
   // triggered event will be caught by the subscribers call back
   statePilot.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
 ````
