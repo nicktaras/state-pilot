@@ -63,7 +63,7 @@ var StatePilot = (function () {
     function StatePilot(previousState) {
         this.subIds = 0;
         this.subscriptions = {};
-        this.triggerAction = {};
+        this.triggerStoreAction = {};
         if (previousState) {
             this.stateStore = previousState;
         }
@@ -90,7 +90,7 @@ var StatePilot = (function () {
             this.createStoreState(storeName, initialState);
         return this.eventHandler("createStore", storeName, this.stateStore[storeName].state);
     };
-    StatePilot.prototype.createStoreState = function (storeName, state) {
+    StatePilot.prototype.createStoreState = function (storeName, state, storeAction, storeActionSubKey) {
         this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
         if (this.stateStore[storeName].useHistory === false) {
             this.stateStore[storeName].state = [state];
@@ -99,7 +99,7 @@ var StatePilot = (function () {
             this.stateStore[storeName].state.push(state);
             this.createPastStoreState(storeName, state);
         }
-        return this.eventHandler("createStoreState", storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1]);
+        return this.eventHandler("createStoreState", storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1], storeAction, storeActionSubKey);
     };
     StatePilot.prototype.createPastStoreState = function (storeName, state) {
         return __awaiter(this, void 0, void 0, function () {
@@ -109,19 +109,19 @@ var StatePilot = (function () {
             });
         });
     };
-    StatePilot.prototype.createActions = function (actions) {
+    StatePilot.prototype.createStoreActions = function (actions) {
         var _this = this;
         actions.forEach(function (action) { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                this.createAction(action.name, action.store, action.subStoreKey, action.fn, action.isAsync);
+                this.createStoreAction(action.name, action.store, action.subStoreKey, action.fn, action.isAsync);
                 return [2];
             });
         }); });
     };
-    StatePilot.prototype.createAction = function (name, store, subStoreKey, fn, isAsync) {
+    StatePilot.prototype.createStoreAction = function (name, store, subStoreKey, fn, isAsync) {
         var _this = this;
         if (isAsync === void 0) { isAsync = false; }
-        this.throwErrorCheck(this.triggerAction[name], "Action already exists");
+        this.throwErrorCheck(this.triggerStoreAction[name], "Action already exists");
         if (isAsync) {
             var _fn = function (newState) { return __awaiter(_this, void 0, void 0, function () {
                 var currState, nextState, _a, _b;
@@ -135,19 +135,19 @@ var StatePilot = (function () {
                             return [4, fn(newState)];
                         case 1:
                             _a[_b] = _c.sent();
-                            return [2, this.createStoreState(store, nextState)];
+                            return [2, this.createStoreState(store, nextState, name, subStoreKey)];
                     }
                 });
             }); };
-            this.triggerAction[name] = _fn.bind(this);
+            this.triggerStoreAction[name] = _fn.bind(this);
         }
         else {
             var _fn = function (newState) {
                 var nextState = Object.assign({}, _this.getStoreState(store));
                 nextState[subStoreKey] = fn(newState);
-                return _this.createStoreState(store, nextState);
+                return _this.createStoreState(store, nextState, name, subStoreKey);
             };
-            this.triggerAction[name] = _fn.bind(this);
+            this.triggerStoreAction[name] = _fn.bind(this);
         }
     };
     StatePilot.prototype.getPreviousState = function (storeName, previousIndex) {
@@ -187,7 +187,7 @@ var StatePilot = (function () {
             : lastIndex;
         return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
     };
-    StatePilot.prototype.subscribe = function (store, callbackFn) {
+    StatePilot.prototype.subscribe = function (store, callbackFn, actions) {
         var _this = this;
         if (!this.subscriptions[store])
             this.subscriptions[store] = {};
@@ -201,8 +201,24 @@ var StatePilot = (function () {
         this.subscriptions[store] && delete this.subscriptions[store][subId];
         return "unsubcribed from store ".concat(store, " with subscription id ").concat(subId);
     };
-    StatePilot.prototype.eventHandler = function (eventName, storeName, state) {
-        this.publish(storeName, { storeName: storeName, eventName: eventName, state: state });
+    StatePilot.prototype.eventHandler = function (eventName, storeName, state, storeAction, storeActionSubKey) {
+        if (storeAction && storeActionSubKey) {
+            this.publish(storeName, {
+                storeName: storeName,
+                eventName: eventName,
+                actionName: storeAction,
+                actionData: state[storeActionSubKey],
+                data: state
+            });
+        }
+        else {
+            this.publish(storeName, {
+                storeName: storeName,
+                eventName: eventName,
+                data: state,
+                actionName: undefined
+            });
+        }
         return state;
     };
     StatePilot.prototype.publish = function (store) {

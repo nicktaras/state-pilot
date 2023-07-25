@@ -4,12 +4,12 @@ export class StatePilot {
   subIds: number;
   subscriptions: {};
   stateStore: {};
-  triggerAction: object;
+  triggerStoreAction: object;
 
   constructor(previousState: any) {
     this.subIds = 0;
     this.subscriptions = {};
-    this.triggerAction = {};
+    this.triggerStoreAction = {};
     if (previousState) {
       this.stateStore = previousState;
     } else {
@@ -51,7 +51,12 @@ export class StatePilot {
     );
   }
 
-  public createStoreState(storeName: string, state: any) {
+  public createStoreState(
+    storeName: string,
+    state: any,
+    storeAction?: string,
+    storeActionSubKey?: string
+  ) {
     this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
     if (this.stateStore[storeName].useHistory === false) {
       this.stateStore[storeName].state = [state];
@@ -64,7 +69,9 @@ export class StatePilot {
       storeName,
       this.stateStore[storeName].state[
         this.stateStore[storeName].state.length - 1
-      ]
+      ],
+      storeAction,
+      storeActionSubKey
     );
   }
 
@@ -72,9 +79,9 @@ export class StatePilot {
     Promise.resolve(this.stateStore[storeName].past.push(state));
   }
 
-  public createActions(actions: StateAction[]) {
-    actions.forEach(async (action) => {
-      this.createAction(
+  public createStoreActions(actions: StateAction[]) {
+    actions.forEach((action) => {
+      this.createStoreAction(
         action.name,
         action.store,
         action.subStoreKey,
@@ -84,29 +91,32 @@ export class StatePilot {
     });
   }
 
-  public createAction(
+  public createStoreAction(
     name: string,
     store: string,
     subStoreKey: string,
     fn: Function,
     isAsync: boolean = false
   ) {
-    this.throwErrorCheck(this.triggerAction[name], "Action already exists");
+    this.throwErrorCheck(
+      this.triggerStoreAction[name],
+      "Action already exists"
+    );
     if (isAsync) {
       const _fn = async (newState) => {
         const currState = this.getStoreState(store);
         let nextState = currState;
         nextState[subStoreKey] = await fn(newState);
-        return this.createStoreState(store, nextState);
+        return this.createStoreState(store, nextState, name, subStoreKey);
       };
-      this.triggerAction[name] = _fn.bind(this);
+      this.triggerStoreAction[name] = _fn.bind(this);
     } else {
       const _fn = (newState) => {
         let nextState = Object.assign({}, this.getStoreState(store));
         nextState[subStoreKey] = fn(newState);
-        return this.createStoreState(store, nextState);
+        return this.createStoreState(store, nextState, name, subStoreKey);
       };
-      this.triggerAction[name] = _fn.bind(this);
+      this.triggerStoreAction[name] = _fn.bind(this);
     }
   }
 
@@ -188,7 +198,7 @@ export class StatePilot {
     return this.stateStore[storeName].state.slice(startIndex, _lastIndex);
   }
 
-  public subscribe(store: string, callbackFn: Function) {
+  public subscribe(store: string, callbackFn: Function, actions: any[]) {
     if (!this.subscriptions[store]) this.subscriptions[store] = {};
     const subId = ++this.subIds;
     this.subscriptions[store][subId] = callbackFn;
@@ -201,8 +211,29 @@ export class StatePilot {
     return `unsubcribed from store ${store} with subscription id ${subId}`;
   }
 
-  private eventHandler(eventName: string, storeName: string, state: any) {
-    this.publish(storeName, {storeName, eventName, state});
+  private eventHandler(
+    eventName: string,
+    storeName: string,
+    state: any,
+    storeAction?: string,
+    storeActionSubKey?: string
+  ) {
+    if (storeAction && storeActionSubKey) {
+      this.publish(storeName, {
+        storeName,
+        eventName,
+        actionName: storeAction,
+        actionData: state[storeActionSubKey],
+        data: state
+      });
+    } else {
+      this.publish(storeName, {
+        storeName,
+        eventName,
+        data: state,
+        actionName: undefined
+      });
+    }
     return state;
   }
 

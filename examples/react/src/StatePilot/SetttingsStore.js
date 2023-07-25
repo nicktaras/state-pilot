@@ -1,25 +1,21 @@
+let statePilot = null;
+
 const settingsStore = {
-  initialise: (statePilot) => {
+  initialise: (statePilotInstance) => {
+    statePilot = statePilotInstance;
     statePilot.createStore(
       "settingsStore",
-      {darkMode: true, accountName: "state-pilot"},
+      {darkMode: true, accountName: "state-pilot-user-123"},
       true
     );
-    // If a single action is to be defined, the following code can be used.
-    // statePilot.createAction(
-    //   "TOGGLE_DARK_MODE",
-    //   "settingsStore",
-    //   "darkMode",
-    //   function (s) {
-    //     return !s;
-    //   }
-    // );
-    // if multiple actions are to be defined, the following code can be used.
-    statePilot.createActions([
+    statePilot.createStoreActions([
       {
         name: "TOGGLE_DARK_MODE",
-        fn: function (s) {
-          return !s;
+        fn: function () {
+          const nextState = statePilot.getStoreState("settingsStore")
+            ? statePilot.getStoreState("settingsStore").darkMode
+            : false;
+          return !nextState;
         },
         store: "settingsStore",
         subStoreKey: "darkMode"
@@ -27,5 +23,13 @@ const settingsStore = {
     ]);
   }
 };
+
+export function toggleSettings() {
+  statePilot.triggerStoreAction.TOGGLE_DARK_MODE();
+}
+
+export function previousSettings() {
+  statePilot.applyPreviousState("settingsStore");
+}
 
 export default settingsStore;

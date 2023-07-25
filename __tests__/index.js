@@ -228,9 +228,9 @@ test("throw error when store action is duplicated", () => {
   const statePilot = new StatePilot();
   statePilot.createStore("views");
   statePilot.createStoreState("views", {path: "/settings"});
-  statePilot.createAction("CHANGE_VIEW", "views", "path", () => {});
+  statePilot.createStoreAction("CHANGE_VIEW", "views", "path", () => {});
   expect(() => {
-    statePilot.createAction("CHANGE_VIEW", "views", "path", () => {});
+    statePilot.createStoreAction("CHANGE_VIEW", "views", "path", () => {});
   }).toThrow("Action already exists");
 });
 
@@ -238,7 +238,7 @@ test("can create many actions", () => {
   const statePilot = new StatePilot();
   statePilot.createStore("views");
   statePilot.createStoreState("views", {path: "/settings", showNavBar: false});
-  statePilot.createActions([
+  statePilot.createStoreActions([
     {
       name: "CHANGE_VIEW",
       store: "views",
@@ -258,11 +258,11 @@ test("can create many actions", () => {
       isAsync: false
     }
   ]);
-  expect(statePilot.triggerAction["CHANGE_VIEW"]("/home")).toEqual({
+  expect(statePilot.triggerStoreAction["CHANGE_VIEW"]("/home")).toEqual({
     path: "/home",
     showNavBar: false
   });
-  expect(statePilot.triggerAction["TOGGLE_NAV_BAR"](false)).toEqual({
+  expect(statePilot.triggerStoreAction["TOGGLE_NAV_BAR"](false)).toEqual({
     path: "/home",
     showNavBar: true
   });
@@ -272,10 +272,10 @@ test("create non async action for view store", () => {
   const statePilot = new StatePilot();
   statePilot.createStore("views");
   statePilot.createStoreState("views", {path: "/settings"});
-  statePilot.createAction("CHANGE_VIEW", "views", "path", (newState) => {
+  statePilot.createStoreAction("CHANGE_VIEW", "views", "path", (newState) => {
     return newState;
   });
-  expect(statePilot.triggerAction["CHANGE_VIEW"]("/home")).toEqual({
+  expect(statePilot.triggerStoreAction["CHANGE_VIEW"]("/home")).toEqual({
     path: "/home"
   });
 });
@@ -284,7 +284,7 @@ test("create async action for view store", async () => {
   const statePilot = new StatePilot();
   statePilot.createStore("views");
   statePilot.createStoreState("views", {path: "/settings"});
-  statePilot.createAction(
+  statePilot.createStoreAction(
     "CHANGE_VIEW",
     "views",
     "path",
@@ -293,7 +293,7 @@ test("create async action for view store", async () => {
     },
     true
   );
-  const out = await statePilot.triggerAction["CHANGE_VIEW"]("/home");
+  const out = await statePilot.triggerStoreAction["CHANGE_VIEW"]("/home");
   expect(out).toEqual({path: "/home"});
 });
 

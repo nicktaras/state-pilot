@@ -86,6 +86,16 @@ subscribe to a store.
   statePilot.createStoreState('userSettings', { darkMode: true, lang: 'en-us' });
 ````
 
+subscribe to a store and read from action data.
+
+````javascript 
+  statePilot.triggerStoreAction.SET_DARK_MODE(true);
+  // action data can be found within the actionData of a call back
+  const unSubUserSettings = statePilot.subscribe('userSettings', (state) => {
+    if(state.storeAction === "SET_DARK_MODE") console.log(state.actionData)
+  });
+````
+
 create store action to provide for more descriptive state change triggers.
 
 ````javascript 
@@ -95,7 +105,7 @@ create store action to provide for more descriptive state change triggers.
   // @params Function fn this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
   // @params boolean isAsync if the call back fn is async or not
   // @returns void
-  statePilot.createAction(name, store, subStoreKey, fn, isAsync);
+  statePilot.createStoreAction(name, store, subStoreKey, fn, isAsync);
 ````
 
 create store actions as an array.
@@ -107,7 +117,7 @@ create store actions as an array.
   // @params Function fn this is the custom function logic applied e.g. function(s) { return !s } will reverse a booleans the state
   // @params boolean isAsync if the call back fn is async or not
   // @returns void
-  statePilot.createActions(
+  statePilot.createStoreActions(
     [
       {
         name
@@ -154,7 +164,7 @@ example use of library
   statePilot.createStoreState('userSettings', { darkMode: true });
 
   // create a store action
-  statePilot.createAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', function(s) { return !s });
+  statePilot.createStoreAction('TOGGLE_DARK_MODE', 'userSettings', 'darkMode', function(s) { return !s });
   
   // add some subscriptions to listen for changes
   const unSubscribeUserSettings = statePilot.unsubscribe('userSettings', data => { /* do something with data */ });
@@ -163,12 +173,10 @@ example use of library
   // invoke state changes to be recieved by subscribers
   statePilot.createStoreState('viewNavigation', { path: '/contact', name: 'contact' });
   
-  // invoke state change via triggerAction to be recieved by subscribers
-  statePilot.triggerAction.TOGGLE_DARK_MODE(statePilot.getStoreState('userSettings').darkMode);
+  // invoke state change via triggerStoreAction to be recieved by subscribers
+  statePilot.triggerStoreAction.TOGGLE_DARK_MODE(statePilot.getStoreState('userSettings').darkMode);
 
 ````
-
-
 
 
 

@@ -1,43 +1,62 @@
-import React, {useState, useEffect} from "react";
-
-import statePilotSingleton from "./StatePilot/StatePilotInstance";
+// import the trigger actions from stores
+import {toggleSettings, previousSettings} from "./StatePilot/SetttingsStore";
+import {
+  createBlogEntry,
+  updateBlogEntry,
+  deleteBlogEntry,
+  readBlogEntries
+} from "./StatePilot/RestStore";
 
 function Publish() {
-  const statePilotInstance = statePilotSingleton.instance();
-
-  function toggleSettings() {
-    const nextState = statePilotSingleton
-      .instance()
-      .getStoreState("settingsStore")
-      ? statePilotInstance.getStoreState("settingsStore").darkMode
-      : false;
-    statePilotInstance.triggerAction.TOGGLE_DARK_MODE(nextState);
-  }
-
-  function previousSettings() {
-    statePilotInstance.applyPreviousState("settingsStore");
-  }
-
   return (
     <div>
-      {statePilotSingleton && (
-        <div>
-          <button
-            onClick={(e) => {
-              toggleSettings();
-            }}
-          >
-            Toggle Dark Mode
-          </button>
-          <button
-            onClick={(e) => {
-              previousSettings();
-            }}
-          >
-            Undo Dark Mode Step
-          </button>
-        </div>
-      )}
+      <div>
+        <button
+          onClick={(e) => {
+            toggleSettings();
+          }}
+        >
+          Toggle Dark Mode
+        </button>
+        <button
+          onClick={(e) => {
+            previousSettings();
+          }}
+        >
+          Undo Dark Mode Step
+        </button>
+      </div>
+      <div>
+        <p style={{padding: "0 10px"}}>Blog Entry</p>
+        <button
+          onClick={(e) => {
+            createBlogEntry();
+          }}
+        >
+          Add Blog Entry
+        </button>
+        <button
+          onClick={(e) => {
+            readBlogEntries();
+          }}
+        >
+          Read Blog Entry
+        </button>
+        <button
+          onClick={(e) => {
+            updateBlogEntry();
+          }}
+        >
+          Update Blog Entry
+        </button>
+        <button
+          onClick={(e) => {
+            deleteBlogEntry();
+          }}
+        >
+          Delete Blog Entry
+        </button>
+      </div>
     </div>
   );
 }

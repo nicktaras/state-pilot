@@ -1,5 +1,6 @@
 import {StatePilot} from "./../dist/index";
 import SettingsStore from "./SetttingsStore";
+import RestStore from "./RestStore";
 
 const StatePilotSingleton = (function () {
   let instance;
@@ -10,10 +11,12 @@ const StatePilotSingleton = (function () {
         instance = this;
         instance.statePilot = new StatePilot();
         SettingsStore.initialise(instance.statePilot);
+        RestStore.initialise(instance.statePilot);
       }
       return instance;
     }
     instance() {
+      window.statePilotSingleton = instance.statePilot;
       return instance.statePilot;
     }
   }
