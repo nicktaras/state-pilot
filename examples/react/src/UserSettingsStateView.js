@@ -2,22 +2,21 @@ import React, {useState} from "react";
 import statePilotSingleton from "./StatePilot/StatePilotInstance";
 
 let unsubscribeUserSettings1 = null;
-let unsubscribeUserSettings2 = null;
 
-function Subscribe(props) {
+function UserSettingsStateView(props) {
   const statePilotInstance = statePilotSingleton.instance();
 
   const [darkMode, setDarkMode] = useState(
     statePilotInstance.getStoreState("settingsStore")?.darkMode.toString()
   );
 
-  const [blogEntries, setBlogEntries] = useState(
-    statePilotInstance.getStoreState("restStore")?.blogPosts
-  );
-
   const formatDarkMode = (data) => {
     if (data !== undefined) return data.toString();
   };
+
+  // this is really ugly. Meaning the React developer must keep track of
+  // their subscriptions or reset them like so each time.
+  console.log("un sub user settings view");
 
   if (unsubscribeUserSettings1 !== null) unsubscribeUserSettings1();
 
@@ -32,17 +31,6 @@ function Subscribe(props) {
     }
   );
 
-  if (unsubscribeUserSettings2 !== null) unsubscribeUserSettings2();
-
-  unsubscribeUserSettings2 = statePilotInstance.subscribe(
-    "restStore",
-    function ({actionData}) {
-      setBlogEntries(() => {
-        return [actionData.map((item) => item.title)];
-      });
-    }
-  );
-
   return (
     <div>
       <div className="dark-mode-title">Dark Mode setting is: {darkMode}</div>
@@ -54,15 +42,9 @@ function Subscribe(props) {
       >
         Unsuscribe from Settings Store Subcription to show status
       </button>
-      <div className="">
-        {blogEntries &&
-          blogEntries.map((blogTitle, index) => {
-            return <div key={index}>{blogTitle}</div>;
-          })}
-      </div>
       {props.children}
     </div>
   );
 }
 
-export default Subscribe;
+export default UserSettingsStateView;

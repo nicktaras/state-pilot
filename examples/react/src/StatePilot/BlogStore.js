@@ -1,10 +1,10 @@
 let statePilot = null;
 
-const restStore = {
+const blogStore = {
   initialise: (statePilotInstance) => {
     statePilot = statePilotInstance;
     statePilot.createStore(
-      "restStore",
+      "blogStore",
       {
         blogPosts: [
           /*
@@ -19,40 +19,40 @@ const restStore = {
       {
         name: "CREATE_BLOG_POST",
         fn: function (post) {
-          let blogArr = statePilot.getStoreState("restStore").blogPosts;
+          let blogArr = statePilot.getStoreState("blogStore").blogPosts;
           blogArr.push(post);
           return blogArr;
         },
-        store: "restStore",
+        store: "blogStore",
         subStoreKey: "blogPosts"
       },
       {
         name: "READ_BLOG_POSTS",
         fn: function () {
-          return statePilot.getStoreState("restStore").blogPosts || [];
+          return statePilot.getStoreState("blogStore").blogPosts || [];
         },
-        store: "restStore",
+        store: "blogStore",
         subStoreKey: "blogPosts"
       },
       {
         name: "UPDATE_BLOG_POST",
         fn: function (params) {
           const {index, data} = params;
-          let blogArr = statePilot.getStoreState("restStore").blogPosts;
+          let blogArr = statePilot.getStoreState("blogStore").blogPosts;
           blogArr[index] = data;
           return blogArr;
         },
-        store: "restStore",
+        store: "blogStore",
         subStoreKey: "blogPosts"
       },
       {
         name: "DELETE_BLOG_POST",
         fn: function (postIndex) {
-          let blogArr = statePilot.getStoreState("restStore").blogPosts;
+          let blogArr = statePilot.getStoreState("blogStore").blogPosts;
           blogArr.splice(postIndex, 1);
           return blogArr;
         },
-        store: "restStore",
+        store: "blogStore",
         subStoreKey: "blogPosts"
       }
     ]);
@@ -71,7 +71,7 @@ export function readBlogEntries() {
 }
 
 export function updateBlogEntry() {
-  const l = statePilot.getStoreState("restStore")?.blogPosts.length;
+  const l = statePilot.getStoreState("blogStore")?.blogPosts.length;
   statePilot.triggerStoreAction.UPDATE_BLOG_POST({
     index: l - 1,
     data: {
@@ -85,4 +85,4 @@ export function deleteBlogEntry() {
   statePilot.triggerStoreAction.DELETE_BLOG_POST(0);
 }
 
-export default restStore;
+export default blogStore;

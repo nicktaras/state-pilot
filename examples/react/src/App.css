@@ -25,3 +25,9 @@ button {
   cursor: pointer;
 }
 
+.blog-entry {
+  margin: 9px;
+  border: 1px solid grey;
+  padding: 12px;
+}
+

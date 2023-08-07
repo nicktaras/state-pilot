@@ -1,6 +1,6 @@
 import {StatePilot} from "./../dist/index";
 import SettingsStore from "./SetttingsStore";
-import RestStore from "./RestStore";
+import BlogStore from "./BlogStore";
 
 const StatePilotSingleton = (function () {
   let instance;
@@ -11,7 +11,7 @@ const StatePilotSingleton = (function () {
         instance = this;
         instance.statePilot = new StatePilot();
         SettingsStore.initialise(instance.statePilot);
-        RestStore.initialise(instance.statePilot);
+        BlogStore.initialise(instance.statePilot);
       }
       return instance;
     }

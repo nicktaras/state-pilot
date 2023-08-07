@@ -111,12 +111,9 @@ var StatePilot = (function () {
     };
     StatePilot.prototype.createStoreActions = function (actions) {
         var _this = this;
-        actions.forEach(function (action) { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                this.createStoreAction(action.name, action.store, action.subStoreKey, action.fn, action.isAsync);
-                return [2];
-            });
-        }); });
+        actions.forEach(function (action) {
+            _this.createStoreAction(action.name, action.store, action.subStoreKey, action.fn, action.isAsync);
+        });
     };
     StatePilot.prototype.createStoreAction = function (name, store, subStoreKey, fn, isAsync) {
         var _this = this;
