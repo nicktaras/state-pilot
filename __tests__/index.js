@@ -42,6 +42,58 @@ test("throw error when previous state cannot locate a store", () => {
   }).toThrow("Store doesn't exist");
 });
 
+test("returns the last state when the previous index exceeds the history length", () => {
+  const statePilot = new StatePilot();
+  statePilot.stateStore = {
+    views: {
+      useHistory: true,
+      state: ["state1", "state2", "state3"],
+    },
+  };
+  
+  const result = statePilot.getPreviousState("views", 10);
+  expect(result).toBe("state3");
+});
+
+test("returns the middel state when the previous index matches", () => {
+  const statePilot = new StatePilot();
+  statePilot.stateStore = {
+    views: {
+      useHistory: true,
+      state: ["state1", "state2", "state3"],
+    },
+  };
+
+  const result = statePilot.getPreviousState("views", 1);
+  expect(result).toBe("state2");
+});
+
+test("returns the correct state when previousIndex is zero", () => {
+  const statePilot = new StatePilot();
+  statePilot.stateStore = {
+    views: {
+      useHistory: true,
+      state: ["state1", "state2", "state3"],
+    },
+  };
+
+  const result = statePilot.getPreviousState("views", 0);
+  expect(result).toBe("state1");
+});
+
+test("returns the first state when previousIndex is negative", () => {
+  const statePilot = new StatePilot();
+  statePilot.stateStore = {
+    views: {
+      useHistory: true,
+      state: ["state1", "state2", "state3"],
+    },
+  };
+
+  const result = statePilot.getPreviousState("views", -1);
+  expect(result).toBe("state1");
+});
+
 test("throw error when previous state cannot locate history", () => {
   const statePilot = new StatePilot();
   statePilot.createStore("views");
@@ -317,6 +369,17 @@ test("unsubscribe from a store", () => {
   );
 });
 
+test("unsubscribe from a store", () => {
+  const mockCallback = jest.fn();
+  const statePilot = new StatePilot();
+  statePilot.createStore("views");
+  statePilot.createStoreState("views", {path: "/settings"});
+  const unSubViews = statePilot.subscribe("views", mockCallback());
+  expect(unSubViews()).toEqual(
+    "unsubcribed from store views with subscription id 1"
+  );
+});
+
 test("subscribe to a store", async () => {
   const mockCallback = jest.fn();
   const statePilot = new StatePilot();
@@ -325,4 +388,105 @@ test("subscribe to a store", async () => {
   const unSubViews = statePilot.subscribe("views", mockCallback());
   statePilot.createStoreState("views", {path: "/home"});
   expect(mockCallback.mock.calls).toHaveLength(1);
+});
+
+describe("getStoreStateHistory", () => {
+  let statePilot;
+
+  beforeEach(() => {
+    statePilot = new StatePilot();
+    statePilot["stateStore"] = {
+      testStore: {
+        useHistory: true,
+        state: ["state1", "state2", "state3", "state4", "state5"],
+      },
+    };
+  });
+
+  test("throws an error when the store does not exist", () => {
+    expect(() => {
+      statePilot.getStoreStateHistory("nonExistentStore", 0, 2);
+    }).toThrow("Store doesn't exist");
+  });
+
+  test("throws an error when the store does not use history", () => {
+    statePilot["stateStore"].testStore.useHistory = false;
+    expect(() => {
+      statePilot.getStoreStateHistory("testStore", 0, 2);
+    }).toThrow("Store has no history");
+  });
+
+  test("returns a subset of states when lastIndex is within bounds", () => {
+    const result = statePilot.getStoreStateHistory("testStore", 1, 3);
+    expect(result).toEqual(["state2", "state3"]);
+  });
+
+  test("returns a subset of states when lastIndex exceeds state length", () => {
+    const result = statePilot.getStoreStateHistory("testStore", 1, 10);
+    expect(result).toEqual(["state2", "state3", "state4", "state5"]);
+  });
+
+  test("returns an empty array when startIndex equals lastIndex", () => {
+    const result = statePilot.getStoreStateHistory("testStore", 2, 2);
+    expect(result).toEqual([]);
+  });
+
+  test("returns an empty array when startIndex exceeds lastIndex", () => {
+    const result = statePilot.getStoreStateHistory("testStore", 4, 2);
+    expect(result).toEqual([]);
+  });
+});
+
+describe('Simulate State Pilot Publish method', () => {
+  let statePilot;
+
+  beforeEach(() => {
+    statePilot = new StatePilot(); // Initialize without previous state
+  });
+
+  it('should call all subscriptions for a given store with correct arguments', () => {
+    const storeName = 'testStore';
+    const initialState = { key: 'value' };
+    const callback1 = jest.fn();
+    const callback2 = jest.fn();
+
+    // Create a store and subscribe to it
+    statePilot.createStore(storeName, initialState, true); // Enable history
+    statePilot.subscribe(storeName, callback1, []);
+    statePilot.subscribe(storeName, callback2, []);
+
+    // Trigger state change
+    const newState = { key: 'newValue' };
+    statePilot.createStoreState(storeName, newState);
+
+    // Verify callbacks were called
+    expect(callback1).toHaveBeenCalledTimes(1);
+    expect(callback2).toHaveBeenCalledTimes(1);
+
+    // Verify arguments passed to the callbacks
+    expect(callback1).toHaveBeenCalledWith(
+      expect.objectContaining({
+        storeName,
+        eventName: 'createStoreState',
+        data: newState,
+        actionName: undefined,
+      })
+    );
+    expect(callback2).toHaveBeenCalledWith(
+      expect.objectContaining({
+        storeName,
+        eventName: 'createStoreState',
+        data: newState,
+        actionName: undefined,
+      })
+    );
+  });
+
+  it('should not throw an error if there are no subscriptions for a store', () => {
+    const storeName = 'emptyStore';
+    statePilot.createStore(storeName, {}, true);
+
+    // Publish without subscriptions
+    expect(() => statePilot.createStoreState(storeName, { key: 'value' })).not.toThrow();
+  });
 });

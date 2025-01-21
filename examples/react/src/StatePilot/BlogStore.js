@@ -60,19 +60,19 @@ const blogStore = {
 };
 
 export function createBlogEntry() {
-  statePilot.triggerStoreAction.CREATE_BLOG_POST({
+  return statePilot.triggerStoreAction.CREATE_BLOG_POST({
     title: "new blog entry",
     description: "new blog entry description"
   });
 }
 
 export function readBlogEntries() {
-  statePilot.triggerStoreAction.READ_BLOG_POSTS();
+  return statePilot.triggerStoreAction.READ_BLOG_POSTS();
 }
 
 export function updateBlogEntry() {
   const l = statePilot.getStoreState("blogStore")?.blogPosts.length;
-  statePilot.triggerStoreAction.UPDATE_BLOG_POST({
+  return statePilot.triggerStoreAction.UPDATE_BLOG_POST({
     index: l - 1,
     data: {
       title: "new blog entry updated",
@@ -82,7 +82,7 @@ export function updateBlogEntry() {
 }
 
 export function deleteBlogEntry() {
-  statePilot.triggerStoreAction.DELETE_BLOG_POST(0);
+  return statePilot.triggerStoreAction.DELETE_BLOG_POST(0);
 }
 
 export default blogStore;

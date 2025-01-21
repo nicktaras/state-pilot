@@ -13,7 +13,7 @@
   "scripts": {
     "build": "npx tsc",
     "pretest": "npx tsc",
-    "test": "jest --coverage"
+    "test": "npx tsc && jest --coverage"
   },
   "files": [
     "dist/"

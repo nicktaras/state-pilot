@@ -1,5 +1,4 @@
-// import the trigger actions from stores
-import {toggleSettings, previousSettings} from "./StatePilot/SetttingsStore";
+import {toggleSettings, previousSettings} from "../statepilot/SetttingsStore";
 
 function UserSettingsUIView() {
   return (

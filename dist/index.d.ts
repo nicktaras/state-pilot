@@ -13,7 +13,7 @@ export declare class StatePilot {
     createPastStoreState(storeName: string, state: any): Promise<void>;
     createStoreActions(actions: StateAction[]): void;
     createStoreAction(name: string, store: string, subStoreKey: string, fn: Function, isAsync?: boolean): void;
-    getPreviousState(storeName: string, previousIndex: any): any;
+    getPreviousState(storeName: string, previousIndex: number): any;
     applyPreviousState(storeName: string): any;
     getStoreState(storeName: string): any;
     getAllStoreStateHistory(storeName: string): any;

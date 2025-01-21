@@ -1,6 +1,8 @@
 # state-pilot
 
-State Pilot is a library designed to simplify state management in your JavaScript or TypeScript applications. With State Pilot, you can manage an application's lifecycle state, subscribe to changes in your data stores, and trigger custom named actions. 
+State Pilot - a library designed to simplify state management in your JavaScript or TypeScript applications. With State Pilot, you can manage an application's lifecycle state, subscribe to changes in your data stores, and trigger custom named actions. 
+
+The aim of this open source project is to create a highly flexible and reliable state management tool that delivers an intuitive interface for integration and ease of use. Contributions are welcome to this project.
 
 ## dev
 

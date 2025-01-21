@@ -4,7 +4,7 @@ import {
   updateBlogEntry,
   deleteBlogEntry,
   readBlogEntries
-} from "./StatePilot/BlogStore";
+} from "../statepilot/BlogStore";
 
 function BlogUIView() {
   return (
@@ -12,28 +12,29 @@ function BlogUIView() {
       <p style={{padding: "0 10px"}}>Blog Entry</p>
       <button
         onClick={(e) => {
-          createBlogEntry();
+          console.log(createBlogEntry());
         }}
       >
-        Add Blog Entry
+        Create Blog Entry
       </button>
       <button
         onClick={(e) => {
-          readBlogEntries();
+          console.log(readBlogEntries());
         }}
       >
         Read Blog Entry
       </button>
       <button
         onClick={(e) => {
-          updateBlogEntry();
+          console.log(updateBlogEntry())
         }}
       >
         Update Blog Entry
       </button>
       <button
         onClick={(e) => {
-          deleteBlogEntry();
+          // FIX should return deleted entry
+          console.log(deleteBlogEntry())
         }}
       >
         Delete Blog Entry

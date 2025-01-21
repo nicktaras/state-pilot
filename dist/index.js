@@ -59,6 +59,10 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+import { STORE_ALREADY_EXISTS, STORE_DOESNT_EXIST, ACTION_ALREADY_EXISTS, STORE_HAS_NO_HISTORY, NO_PREVIOUS_STATE_EXISTS, UNSUBSCRIBE_FROM_STORE_MESSAGE } from "./messaging";
+var CREATE_STORE = "createStore";
+var CREATE_STORE_STATE = "createStoreState";
+var GET_PREVIOUS_STATE = "getPreviousState";
 var StatePilot = (function () {
     function StatePilot(previousState) {
         this.subIds = 0;
@@ -84,14 +88,14 @@ var StatePilot = (function () {
     };
     StatePilot.prototype.createStore = function (storeName, initialState, useHistory) {
         if (useHistory === void 0) { useHistory = false; }
-        this.throwErrorCheck(this.stateStore[storeName], "Store name already exists");
+        this.throwErrorCheck(this.stateStore[storeName], STORE_ALREADY_EXISTS);
         this.stateStore[storeName] = { useHistory: useHistory, state: [], past: [] };
         if (initialState)
             this.createStoreState(storeName, initialState);
-        return this.eventHandler("createStore", storeName, this.stateStore[storeName].state);
+        return this.eventHandler(CREATE_STORE, storeName, this.stateStore[storeName].state);
     };
     StatePilot.prototype.createStoreState = function (storeName, state, storeAction, storeActionSubKey) {
-        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        this.throwErrorCheck(!this.stateStore[storeName], STORE_DOESNT_EXIST);
         if (this.stateStore[storeName].useHistory === false) {
             this.stateStore[storeName].state = [state];
         }
@@ -99,7 +103,7 @@ var StatePilot = (function () {
             this.stateStore[storeName].state.push(state);
             this.createPastStoreState(storeName, state);
         }
-        return this.eventHandler("createStoreState", storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1], storeAction, storeActionSubKey);
+        return this.eventHandler(CREATE_STORE_STATE, storeName, this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1], storeAction, storeActionSubKey);
     };
     StatePilot.prototype.createPastStoreState = function (storeName, state) {
         return __awaiter(this, void 0, void 0, function () {
@@ -118,7 +122,7 @@ var StatePilot = (function () {
     StatePilot.prototype.createStoreAction = function (name, store, subStoreKey, fn, isAsync) {
         var _this = this;
         if (isAsync === void 0) { isAsync = false; }
-        this.throwErrorCheck(this.triggerStoreAction[name], "Action already exists");
+        this.throwErrorCheck(this.triggerStoreAction[name], ACTION_ALREADY_EXISTS);
         if (isAsync) {
             var _fn = function (newState) { return __awaiter(_this, void 0, void 0, function () {
                 var currState, nextState, _a, _b;
@@ -148,37 +152,37 @@ var StatePilot = (function () {
         }
     };
     StatePilot.prototype.getPreviousState = function (storeName, previousIndex) {
-        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
-        var _previousIndex = previousIndex >= this.stateStore[storeName].state.length
-            ? this.stateStore[storeName].state.length
-            : previousIndex;
-        return this.stateStore[storeName].state[_previousIndex];
+        this.throwErrorCheck(!this.stateStore[storeName], STORE_DOESNT_EXIST);
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, STORE_HAS_NO_HISTORY);
+        var storeState = this.stateStore[storeName].state;
+        var maxIndex = storeState.length - 1;
+        var _previousIndex = Math.max(0, Math.min(previousIndex, maxIndex));
+        return storeState[_previousIndex];
     };
     StatePilot.prototype.applyPreviousState = function (storeName) {
-        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        this.throwErrorCheck(!this.stateStore[storeName], STORE_DOESNT_EXIST);
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, STORE_HAS_NO_HISTORY);
         if (this.stateStore[storeName].state[this.stateStore[storeName].past.length - 2]) {
             this.stateStore[storeName].state.push(this.stateStore[storeName].state[this.stateStore[storeName].past.length - 2]);
             this.stateStore[storeName].past.pop();
-            return this.eventHandler("getPreviousState", storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length - 1]);
+            return this.eventHandler(GET_PREVIOUS_STATE, storeName, this.stateStore[storeName].past[this.stateStore[storeName].past.length - 1]);
         }
         else {
-            return "No previous state exists";
+            return NO_PREVIOUS_STATE_EXISTS;
         }
     };
     StatePilot.prototype.getStoreState = function (storeName) {
-        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
+        this.throwErrorCheck(!this.stateStore[storeName], STORE_DOESNT_EXIST);
         return this.stateStore[storeName].state[this.stateStore[storeName].state.length - 1];
     };
     StatePilot.prototype.getAllStoreStateHistory = function (storeName) {
-        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        this.throwErrorCheck(!this.stateStore[storeName], STORE_DOESNT_EXIST);
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, STORE_HAS_NO_HISTORY);
         return this.stateStore[storeName].state.slice(0, this.stateStore[storeName].state.length);
     };
     StatePilot.prototype.getStoreStateHistory = function (storeName, startIndex, lastIndex) {
-        this.throwErrorCheck(!this.stateStore[storeName], "Store doesn't exist");
-        this.throwErrorCheck(!this.stateStore[storeName].useHistory, "Store has no history");
+        this.throwErrorCheck(!this.stateStore[storeName], STORE_DOESNT_EXIST);
+        this.throwErrorCheck(!this.stateStore[storeName].useHistory, STORE_HAS_NO_HISTORY);
         var _lastIndex = lastIndex >= this.stateStore[storeName].state.length
             ? this.stateStore[storeName].state.length
             : lastIndex;
@@ -193,10 +197,8 @@ var StatePilot = (function () {
         return function () { return _this.unsubscribe(store, subId); };
     };
     StatePilot.prototype.unsubscribe = function (store, subId) {
-        if (!subId)
-            delete this.subscriptions[store];
         this.subscriptions[store] && delete this.subscriptions[store][subId];
-        return "unsubcribed from store ".concat(store, " with subscription id ").concat(subId);
+        return UNSUBSCRIBE_FROM_STORE_MESSAGE(store, subId);
     };
     StatePilot.prototype.eventHandler = function (eventName, storeName, state, storeAction, storeActionSubKey) {
         if (storeAction && storeActionSubKey) {

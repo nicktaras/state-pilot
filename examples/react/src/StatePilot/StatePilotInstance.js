@@ -1,4 +1,4 @@
-import {StatePilot} from "./../dist/index";
+import {StatePilot} from "state-pilot";
 import SettingsStore from "./SetttingsStore";
 import BlogStore from "./BlogStore";
 
