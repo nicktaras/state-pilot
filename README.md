@@ -1,5 +1,7 @@
 ![Build Status](https://github.com/nicktaras/state-pilot/actions/workflows/ci.yml/badge.svg)
 
+[![codecov](https://codecov.io/gh/nicktaras/state-pilot/branch/main/graph/badge.svg)](https://codecov.io/gh/nicktaras/state-pilot)
+
 # state-pilot
 
 State Pilot - a library designed to simplify state management in your JavaScript or TypeScript applications. With State Pilot, you can manage an application's lifecycle state, subscribe to changes in your data stores, and trigger custom named actions. 
