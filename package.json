@@ -1,7 +1,8 @@
 {
-  "name": "state-pilot",
+  "name": "@nicholastaras/state-pilot",
   "main": "dist/index.js",
   "version": "1.0.0",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.20.7",
     "@babel/preset-env": "^7.20.2",
@@ -13,12 +14,21 @@
   "scripts": {
     "build": "npx tsc",
     "pretest": "npx tsc",
-    "test": "npx tsc && jest --coverage"
+    "test": "npx tsc && jest --coverage",
+    "publish": "npm publish --access public"
   },
   "files": [
     "dist/",
     "README.md",
     "CONTRIBUTING.md",
     "LICENSE"
+  ],
+  "keywords": [
+    "typescript",
+    "npm",
+    "package",
+    "state-pilot",
+    "state management",
+    "utility"
   ]
 }
