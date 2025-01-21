@@ -365,7 +365,7 @@ test("unsubscribe from a store", () => {
   statePilot.createStoreState("views", {path: "/settings"});
   const unSubViews = statePilot.subscribe("views", mockCallback());
   expect(unSubViews()).toEqual(
-    "unsubcribed from store views with subscription id 1"
+    "unsubscribed from store views with subscription id 1"
   );
 });
 
@@ -376,7 +376,7 @@ test("unsubscribe from a store", () => {
   statePilot.createStoreState("views", {path: "/settings"});
   const unSubViews = statePilot.subscribe("views", mockCallback());
   expect(unSubViews()).toEqual(
-    "unsubcribed from store views with subscription id 1"
+    "unsubscribed from store views with subscription id 1"
   );
 });
 

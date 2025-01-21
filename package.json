@@ -16,6 +16,9 @@
     "test": "npx tsc && jest --coverage"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE"
   ]
 }

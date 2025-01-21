@@ -216,7 +216,7 @@ export class StatePilot {
 
   public unsubscribe(store: string, subId: number) {
     this.subscriptions[store] && delete this.subscriptions[store][subId];
-    // return `unsubcribed from store ${store} with subscription id ${subId}`;
+    // return `unsubscribed from store ${store} with subscription id ${subId}`;
     return UNSUBSCRIBE_FROM_STORE_MESSAGE(store, subId);
   }
 
